@@ -1,0 +1,15 @@
+# Basics
+numpy
+pandas
+sklearn
+keras
+tensorflow
+
+# Plot
+matplotlib
+
+# Biology
+biopython
+
+# Miscellaneous
+tqdm
