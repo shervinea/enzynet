@@ -76,7 +76,7 @@ Thanks to the user-friendliness of the high-level deep learning framework used i
 You can find our paper on [arXiv](https://arxiv.org/pdf/1707.06017.pdf "Paper"). The associated BibTeX code is
 ```
 @article{Amidi2017,
-  author = {A. Amidi and S. Amidi and D. Vlachakis and V. Megalooikonomou and N. Paragios and E. Zacharaki},
+  author = {A. Amidi and S. Amidi and D. Vlachakis and V. Megalooikonomou and N. Paragios and E.I. Zacharaki},
   title = {EnzyNet: enzyme classification using 3D convolutional neural networks on spatial representation},
   journal = {ArXiv e-prints},
   archivePrefix = {arXiv},
