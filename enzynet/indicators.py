@@ -48,10 +48,10 @@ class Indicators(object):
         self.confusion_matrix = np.zeros((self.n_classes, self.n_classes))
         for i, j in zip(self.y_true, self.y_pred):
             self.confusion_matrix[i-1,j-1] += 1
-        print('Confusion matrix: \n {0}'.format(np.array(self.confusion_matrix, dtype = int)))
+        print('Confusion matrix: \n {0}'.format(np.array(self.confusion_matrix, dtype=int)))
 
         self.confusion_matrix_scaled = \
-            self.confusion_matrix/np.sum(self.confusion_matrix, axis = 1)[:, None]
+            self.confusion_matrix/np.sum(self.confusion_matrix, axis=1)[:, None]
         print('Scaled confusion matrix: \n {0}'.format(np.around(self.confusion_matrix_scaled, 3)))
 
     def accuracy(self):
@@ -62,7 +62,7 @@ class Indicators(object):
     def precision_per_class(self):
         'Precision per class'
         self.precision_per_class = \
-            np.diag(self.confusion_matrix/np.sum(self.confusion_matrix, axis = 0))
+            np.diag(self.confusion_matrix/np.sum(self.confusion_matrix, axis=0))
         print('Precision per class: {0}'.format(np.around(self.precision_per_class, 3)))
 
     def recall_per_class(self):

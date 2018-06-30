@@ -5,7 +5,7 @@
 
 # MIT License
 
-from enzynet import dict_to_csv
+from enzynet.tools import dict_to_csv
 
 
 # Initialization

@@ -14,10 +14,10 @@ import numpy as np
 from Bio.PDB.PDBExceptions import PDBConstructionWarning
 from Bio.PDB import *
 
-from enzynet import read_dict, scale_dict
+from enzynet.tools import read_dict, scale_dict
 
 
-warnings.filterwarnings("ignore", category = PDBConstructionWarning)
+warnings.filterwarnings("ignore", category=PDBConstructionWarning)
 
 backbone_ids = ['C', 'N', 'CA']
 
@@ -40,7 +40,7 @@ class PDB_backbone(object):
         downloaded.
 
     """
-    def __init__(self, pdb_id, path = PDB_path):
+    def __init__(self, pdb_id, path=PDB_path):
         'Initialization'
         self.pdb_id = pdb_id.upper()
         fullfilename = os.path.join(path, pdb_id.lower() + '.pdb')
@@ -62,7 +62,7 @@ class PDB_backbone(object):
         for model in self.structure:
             for chain in model:
                 for residue in chain:
-                    if is_aa(residue, standard = True): # Check if amino acid
+                    if is_aa(residue, standard=True): # Check if amino acid
                         for atom in residue:
                             if atom.get_name() in backbone_ids:
                                 backbone_coords = backbone_coords + [atom.get_coord().tolist()]
@@ -72,7 +72,7 @@ class PDB_backbone(object):
         self.backbone_coords = np.array(backbone_coords)
         self.backbone_atoms = backbone_atoms
 
-    def get_coords_extended(self, p = 5):
+    def get_coords_extended(self, p=5):
         'Adds the coordinates from interpolation betweens atoms of the backbone'
         # Initialization
         self.get_coords()
@@ -87,7 +87,7 @@ class PDB_backbone(object):
         # Store results
         self.backbone_coords_ext = np.concatenate((self.backbone_coords, new_coords), axis=0)
 
-    def get_weights(self, weights = 'hydropathy', scaling = True):
+    def get_weights(self, weights='hydropathy', scaling=True):
         'Gets weights of each position regarding associated amino-acid'
         # Initialization
         backbone_weights = []
@@ -105,7 +105,7 @@ class PDB_backbone(object):
         for model in self.structure:
             for chain in model:
                 for residue in chain:
-                    if is_aa(residue, standard = True): # Check if standard amino acid
+                    if is_aa(residue, standard=True): # Check if standard amino acid
                         local_residue = residue.get_resname()
                         local_weight = weights[local_residue]
                         for atom in residue:
@@ -117,10 +117,10 @@ class PDB_backbone(object):
         self.backbone_weights = backbone_weights
         self.backbone_residues = backbone_residues
 
-    def get_weights_extended(self, p, weights = 'hydropathy', scaling = True):
+    def get_weights_extended(self, p, weights='hydropathy', scaling=True):
         'Adds the weights from interpolation between atoms of the backbone'
         # Initialization
-        self.get_weights(weights = weights, scaling = scaling)
+        self.get_weights(weights=weights, scaling=scaling)
         C_weights = self.__get_weights_specific_atom(backbone_ids)
         new_weights = np.zeros((p*(len(C_weights)-1)))
 

@@ -10,53 +10,52 @@ import matplotlib.pyplot as plt
 
 from mpl_toolkits.mplot3d import Axes3D
 
-from enzynet import PDB_backbone
-from enzynet import coords_to_volume, coords_center_to_zero, weights_to_volume
-from enzynet import unique_rows, adjust_size, remove_noise
+from enzynet.PDB import PDB_backbone
+from enzynet.volume import adjust_size, coords_to_volume, coords_center_to_zero, weights_to_volume
 
 
-def visualize_pdb(pdb_id, p = 5, vsize = 32, num = 1, weights = None,
-                  max_radius = 40, noise_treatment = True):
+def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
+                  max_radius=40, noise_treatment=True):
     'Plots PDB in a volume and saves it in a file'
     # Get coordinates
     pdb = PDB_backbone(pdb_id)
-    pdb.get_coords_extended(p = p)
+    pdb.get_coords_extended(p=p)
 
     if weights != None:
-        pdb.get_weights_extended(p = p, weights = weights)
+        pdb.get_weights_extended(p=p, weights=weights)
 
     # Center to 0
     coords = coords_center_to_zero(pdb.backbone_coords_ext)
 
     # Adjust size
-    coords = adjust_size(coords, vsize, max_radius)
+    coords = adjust_size(coords, v_size, max_radius)
 
     if weights == None:
         # Convert to volume
-        volume = coords_to_volume(coords, vsize, noise_treatment = noise_treatment)
+        volume = coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
     else:
         # Converts to volume of weights
-        volume = weights_to_volume(coords, pdb.backbone_weights_ext, vsize,
-                                   noise_treatment = noise_treatment)[1]
+        volume = weights_to_volume(coords, pdb.backbone_weights_ext, v_size,
+                                   noise_treatment=noise_treatment)
     # Plot
-    plot_volume(volume, pdb_id, vsize, num, weights = weights)
+    plot_volume(volume, pdb_id, v_size, num, weights=weights)
 
 # 3D plot, sources: http://stackoverflow.com/a/35978146/4124317
 #                   https://dawes.wordpress.com/2014/06/27/publication-ready-3d-figures-from-matplotlib/
-def plot_volume(volume, pdb_id, vsize, num, weights = None):
+def plot_volume(volume, pdb_id, v_size, num, weights=None):
     'Plots volume in 3D, interpreting the coordinates as voxels'
     # Initialization
-    plt.rc('text', usetex = True)
-    plt.rc('font', family = 'serif')
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
     fig = plt.figure(figsize=(4,4))
-    ax = fig.gca(projection = '3d')
+    ax = fig.gca(projection='3d')
     ax.set_aspect('equal')
 
     # Parameters
     len_vol = volume.shape[0]
 
     # Set position of the view
-    ax.view_init(elev = 20, azim = 135)
+    ax.view_init(elev=20, azim=135)
 
     # Hide tick labels
     ax.set_xticklabels([])
@@ -106,10 +105,10 @@ def plot_volume(volume, pdb_id, vsize, num, weights = None):
     ax.zaxis._axinfo['tick']['outward_factor'] = 0.2
 
     # Save
-    plt.savefig('../scripts/volume/' + str(pdb_id) + '_' + str(vsize) + '_' +
+    plt.savefig('../scripts/volume/' + str(pdb_id) + '_' + str(v_size) + '_' +
                 str(weights) + '_' + str(num) + '.pdf')
 
-def cuboid_data(pos, size = (1,1,1)):
+def cuboid_data(pos, size=(1,1,1)):
     'Gets coordinates of cuboid'
     # Gets the (left, outside, bottom) point
     o = [a - b / 2 for a, b in zip(pos, size)]
@@ -128,13 +127,13 @@ def cuboid_data(pos, size = (1,1,1)):
 
     return x, y, z
 
-def plot_cube_at(pos = (0,0,0), ax = None):
+def plot_cube_at(pos=(0,0,0), ax=None):
     'Plots a cube element at position pos'
     if ax != None:
         X, Y, Z = cuboid_data(pos)
         ax.plot_surface(X, Y, Z, color='g', rstride=1, cstride=1, alpha=1)
 
-def plot_cube_weights_at(pos = (0,0,0), ax = None, color = 'g'):
+def plot_cube_weights_at(pos=(0,0,0), ax=None, color='g'):
     'Plots a cube element at position pos'
     if ax != None:
         X, Y, Z = cuboid_data(pos)
@@ -146,7 +145,7 @@ def plot_matrix(ax, matrix):
         for j in range(matrix.shape[1]):
             for k in range(matrix.shape[2]):
                 if matrix[i,j,k] == 1:
-                    plot_cube_at(pos = (i-0.5,j-0.5,k-0.5), ax = ax)
+                    plot_cube_at(pos=(i-0.5,j-0.5,k-0.5), ax=ax)
 
 def plot_matrix_of_weights(ax, matrix_of_weights):
     'Plots cubes from a volumic matrix'
@@ -174,8 +173,8 @@ def plot_matrix_of_weights(ax, matrix_of_weights):
                     normalized_weight = int(100*normalized_weight)
 
                     # Plot cube with color
-                    plot_cube_weights_at(pos = (i-0.5,j-0.5,k-0.5), ax = ax,
-                                         color = cgen[normalized_weight])
+                    plot_cube_weights_at(pos=(i-0.5,j-0.5,k-0.5), ax=ax,
+                                         color=cgen[normalized_weight])
 
 if __name__ == '__main__':
-    visualize_pdb('2Q3Z', p = 0, vsize = 32, weights = None)
+    visualize_pdb('2Q3Z', p=0, v_size=32, weights=None)

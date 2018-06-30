@@ -7,11 +7,11 @@
 
 import pandas as pa
 import csv
-from enzynet import read_dict
+from enzynet.tools import read_dict
 
 
 # Read csv files
-df = pa.read_csv('../dataset_all.csv', header = None)
+df = pa.read_csv('../dataset_all.csv', header=None)
 
 # Only keep PDB IDs
 df = df[0]+', '

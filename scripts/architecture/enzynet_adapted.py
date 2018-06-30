@@ -9,8 +9,9 @@ import numpy as np
 
 import os.path
 
-from enzynet import read_dict, get_class_weights
-from enzynet import VolumeDataGenerator, MetricsHistory, Voting
+from enzynet.keras_utils import MetricsHistory, Voting
+from enzynet.tools import read_dict, get_class_weights
+from enzynet.volume import VolumeDataGenerator
 
 from keras.callbacks import ModelCheckpoint
 from keras.initializers import RandomNormal
@@ -75,135 +76,138 @@ partition['validation'] = partition['test']
 
 # Get class weights
 class_weights = get_class_weights(dictionary, partition['train'],
-                                  mode = mode_weights)
-
-# Check if data has been precomputed
-VolumeDataGenerator(p = p, weights = weights,
-                    scaling_weights = scaling_weights).check_precomputed(dictionary)
+                                  mode=mode_weights)
 
 # Training generator
 training_generator = \
-    VolumeDataGenerator(v_size = v_size,
-                        flips = flips,
-                        batch_size = batch_size,
-                        shuffle = shuffle,
-                        p = p,
-                        max_radius = max_radius,
-                        noise_treatment = noise_treatment,
-                        weights = weights,
-                        scaling_weights = scaling_weights).generate(dictionary,
-                                                                    partition['train'])
+    VolumeDataGenerator(list_enzymes=partition['train'],
+                        labels=dictionary,
+                        v_size=v_size,
+                        flips=flips,
+                        batch_size=batch_size,
+                        shuffle=shuffle,
+                        p=p,
+                        max_radius=max_radius,
+                        noise_treatment=noise_treatment,
+                        weights=weights,
+                        scaling_weights=scaling_weights)
 
 # Validation generator
 validation_generator = \
-    VolumeDataGenerator(v_size = v_size,
-                        flips = (0, 0, 0), # No flip
-                        batch_size = batch_size,
-                        shuffle = False, # Validate with fixed set
-                        p = p,
-                        max_radius = max_radius,
-                        noise_treatment = noise_treatment,
-                        weights = weights,
-                        scaling_weights = scaling_weights).generate(dictionary,
-                                                                    partition['validation'])
+    VolumeDataGenerator(list_enzymes=partition['validation'],
+                        labels=dictionary,
+                        v_size=v_size,
+                        flips=(0, 0, 0), # No flip
+                        batch_size=batch_size,
+                        shuffle=False, # Validate with fixed set
+                        p=p,
+                        max_radius=max_radius,
+                        noise_treatment=noise_treatment,
+                        weights=weights,
+                        scaling_weights=scaling_weights)
+
+# Check if data has been precomputed
+training_generator.check_precomputed()
 
 ##----------------------------- Testing --------------------------------------##
 # Voting object
 predictions = \
-    Voting(voting_type = voting_type,
-           v_size = v_size,
-           augmentation = augmentation,
-           p = p,
-           max_radius = max_radius,
-           noise_treatment = noise_treatment,
-           weights = weights,
-           scaling_weights = scaling_weights)
+    Voting(list_enzymes=partition['test'],
+           labels=dictionary,
+           voting_type=voting_type,
+           v_size=v_size,
+           augmentation=augmentation,
+           p=p,
+           max_radius=max_radius,
+           noise_treatment=noise_treatment,
+           weights=weights,
+           scaling_weights=scaling_weights)
 
 ##------------------------------ Model ---------------------------------------##
 # Create
 model = Sequential()
 
 # Add layers
-model.add(Conv3D(filters = 32,
-                 kernel_size = 9,
-                 strides = 2,
-                 padding = 'valid',
-                 kernel_initializer = RandomNormal(mean = 0.0, stddev = stddev_conv3d * 9**(-3/2)),
-                 bias_initializer = 'zeros',
-                 kernel_regularizer = l2(0.001),
-                 bias_regularizer = None,
-                 input_shape = (v_size, v_size, v_size, n_channels)))
+model.add(Conv3D(filters=32,
+                 kernel_size=9,
+                 strides=2,
+                 padding='valid',
+                 kernel_initializer=RandomNormal(mean=0.0, stddev=stddev_conv3d * 9**(-3/2)),
+                 bias_initializer='zeros',
+                 kernel_regularizer=l2(0.001),
+                 bias_regularizer=None,
+                 input_shape=(v_size, v_size, v_size, n_channels)))
 
-model.add(LeakyReLU(alpha = 0.1))
+model.add(LeakyReLU(alpha=0.1))
 
-model.add(Dropout(rate = 0.2))
+model.add(Dropout(rate=0.2))
 
-model.add(Conv3D(filters = 64,
-                 kernel_size = 5,
-                 strides = 1,
-                 padding = 'valid',
-                 kernel_initializer = RandomNormal(mean = 0.0, stddev = stddev_conv3d * 5**(-3/2)),
-                 bias_initializer = 'zeros',
-                 kernel_regularizer = l2(0.001),
-                 bias_regularizer = None))
+model.add(Conv3D(filters=64,
+                 kernel_size=5,
+                 strides=1,
+                 padding='valid',
+                 kernel_initializer=RandomNormal(mean=0.0, stddev=stddev_conv3d * 5**(-3/2)),
+                 bias_initializer='zeros',
+                 kernel_regularizer=l2(0.001),
+                 bias_regularizer=None))
 
-model.add(LeakyReLU(alpha = 0.1))
+model.add(LeakyReLU(alpha=0.1))
 
-model.add(MaxPooling3D(pool_size = (2,2,2)))
+model.add(MaxPooling3D(pool_size=(2,2,2)))
 
-model.add(Dropout(rate = 0.3))
+model.add(Dropout(rate=0.3))
 
 model.add(Flatten())
 
-model.add(Dense(units = 128,
-                kernel_initializer = RandomNormal(mean = 0.0, stddev = 0.01),
-                bias_initializer = 'zeros',
-                kernel_regularizer = l2(0.001),
-                bias_regularizer = None))
+model.add(Dense(units=128,
+                kernel_initializer=RandomNormal(mean=0.0, stddev=0.01),
+                bias_initializer='zeros',
+                kernel_regularizer=l2(0.001),
+                bias_regularizer=None))
 
-model.add(Dropout(rate = 0.4))
+model.add(Dropout(rate=0.4))
 
-model.add(Dense(units = n_classes,
-                kernel_initializer = RandomNormal(mean = 0.0, stddev = 0.01),
-                bias_initializer = 'zeros',
-                kernel_regularizer = l2(0.001),
-                bias_regularizer = None))
+model.add(Dense(units=n_classes,
+                kernel_initializer=RandomNormal(mean=0.0, stddev=0.01),
+                bias_initializer='zeros',
+                kernel_regularizer=l2(0.001),
+                bias_regularizer=None))
 
 model.add(Activation('softmax'))
 
 # Track accuracy and loss in real-time
-history = MetricsHistory(saving_path = current_file_name + '.csv')
+history = MetricsHistory(saving_path=current_file_name + '.csv')
 
 # Checkpoints
 checkpoints = ModelCheckpoint('checkpoints/' + current_file_name + '_{epoch:02d}' + '.hd5f',
-                              save_weights_only = True,
-                              period = period_checkpoint)
+                              save_weights_only=True,
+                              period=period_checkpoint)
 
 if mode_run == 'train':
     # Compile
-    model.compile(optimizer = Adam(lr = 0.001, decay = 0.00016667),
-                  loss = 'categorical_crossentropy',
-                  metrics = ['accuracy'])
+    model.compile(optimizer=Adam(lr=0.001, decay=0.00016667),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
     # Train
-    model.fit_generator(generator = training_generator,
-                        steps_per_epoch = len(partition['train'])//batch_size,
-                        epochs = max_epochs,
-                        verbose = 1,
-                        validation_data = validation_generator,
-                        validation_steps = len(partition['validation'])//batch_size,
-                        callbacks = [history, checkpoints],
-                        class_weight = class_weights,
-                        workers = 4)
+    model.fit_generator(generator=training_generator,
+                        epochs=max_epochs,
+                        verbose=1,
+                        validation_data=validation_generator,
+                        callbacks=[history, checkpoints],
+                        class_weight=class_weights,
+                        use_multiprocessing=True,
+                        workers=6,
+                        max_queue_size=30)
 
 if mode_run == 'test':
     # Load weights
     weights_path = \
-        'checkpoints/' + current_file_name + '_{0:02d}'.format(max_epochs-1) + '.hd5f'
+        'checkpoints/' + current_file_name + '_{0:02d}'.format(max_epochs) + '.hd5f'
     model.load_weights(weights_path)
 
 # Predict
-predictions.predict(model, partition['test'], dictionary)
+predictions.predict(model)
 
 # Compute indicators
 predictions.get_assessment()

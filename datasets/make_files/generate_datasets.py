@@ -11,7 +11,8 @@ import pandas as pa
 import os
 
 from tqdm import tqdm
-from enzynet import read_dict, dict_to_csv, PDB_backbone
+from enzynet.PDB import PDB_backbone
+from enzynet.tools import read_dict, dict_to_csv
 
 
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017
@@ -24,7 +25,7 @@ n_classes = 6
 for i in range(1, n_classes+1):
     # Initialization
     errors = [] # List of indexes with error
-    enzymes = pa.read_table('raw/' + str(i) + '.txt', header = None) # Load PDB IDs
+    enzymes = pa.read_table('raw/' + str(i) + '.txt', header=None) # Load PDB IDs
     list_enzymes = enzymes.loc[:,0].tolist()
 
     # Look for errors
@@ -43,7 +44,7 @@ for i in range(1, n_classes+1):
 
     # Drop errors and save
     enzymes = enzymes.drop(enzymes.index[errors])
-    enzymes.to_csv(str(i) + '.txt', header = None, index = None)
+    enzymes.to_csv(str(i) + '.txt', header=None, index=None)
 
 ##-------------- Dictionary with all PDBs in dataset_all.csv -----------------##
 # Initialization
@@ -52,7 +53,7 @@ labels = {}
 # Computations
 for i in range(1, n_classes+1):
     # Load PDB IDs for each class
-    enzymes = pa.read_table(str(i) + '.txt', header = None)
+    enzymes = pa.read_table(str(i) + '.txt', header=None)
     enzymes = enzymes[0].tolist()
 
     # Add entries to dict
