@@ -125,7 +125,7 @@ def cuboid_data(pos, size=(1,1,1)):
          [o[2], o[2], o[2] + h, o[2] + h, o[2]],
          [o[2], o[2], o[2] + h, o[2] + h, o[2]]]
 
-    return x, y, z
+    return np.array(x), np.array(y), np.array(z)
 
 def plot_cube_at(pos=(0,0,0), ax=None):
     'Plots a cube element at position pos'
