@@ -1,4 +1,4 @@
-'Storing isoelectric information in a dictionary'
+"""Storing isoelectric information in a dictionary."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -8,10 +8,10 @@
 from enzynet.tools import dict_to_csv
 
 
-# Initialization
+# Initialization.
 isoelectric = {}
 
-# Info from chapter 24 of Organic Chemistry (5th edition), by Wade
+# Info from chapter 24 of Organic Chemistry (5th edition), by Wade.
 isoelectric['ALA'] = 6.0
 isoelectric['ARG'] = 10.8
 isoelectric['ASN'] = 5.4
@@ -33,9 +33,9 @@ isoelectric['TRP'] = 5.9
 isoelectric['TYR'] = 5.7
 isoelectric['VAL'] = 6.0
 
-# Center on neutral value
+# Center on neutral value.
 neutral_value = 6.0
 isoelectric = {k: v - neutral_value for k, v in isoelectric.items()}
 
-# Save results
+# Save results.
 dict_to_csv(isoelectric, '../isoelectric.csv')

@@ -1,4 +1,4 @@
-'Storing hydropathy information in a dictionary'
+"""Storing hydropathy information in a dictionary."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -8,10 +8,10 @@
 from enzynet.tools import dict_to_csv
 
 
-# Initialization
+# Initialization.
 hydropathy = {}
 
-# Values from J. Kyte et al. paper
+# Values from J. Kyte et al. paper.
 hydropathy['ILE'] = 4.5
 hydropathy['VAL'] = 4.2
 hydropathy['LEU'] = 3.8
@@ -33,5 +33,5 @@ hydropathy['ASN'] = -3.5
 hydropathy['LYS'] = -3.9
 hydropathy['ARG'] = -4.5
 
-# Save results
+# Save results.
 dict_to_csv(hydropathy, '../hydropathy.csv')

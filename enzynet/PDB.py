@@ -1,4 +1,4 @@
-'Get characteristics from PDB files'
+"""Get characteristics from PDB files."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -25,10 +25,9 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 PDB_path = os.path.join(current_directory, '../files/PDB/')
 datasets_path = os.path.join(current_directory, '../datasets/')
 
-class PDB_backbone(object):
-    """
-    Functions aimed at information extraction from PDB files.
 
+class PDB_backbone(object):
+    """Functions aimed at information extraction from PDB files.
 
     Parameters
     ----------
@@ -38,13 +37,12 @@ class PDB_backbone(object):
     path : string (optional, default is 'files/PDB')
         Path where the PDB file is located, or where the PDB file should be
         downloaded.
-
     """
     def __init__(self, pdb_id, path=PDB_path):
-        'Initialization'
+        """Initialization."""
         self.pdb_id = pdb_id.upper()
         fullfilename = os.path.join(path, pdb_id.lower() + '.pdb')
-        if os.path.isfile(fullfilename): # File in directory
+        if os.path.isfile(fullfilename):  # File in directory.
             pass
         else:
             urllib.request.urlretrieve('http://files.rcsb.org/download/' +
@@ -53,59 +51,59 @@ class PDB_backbone(object):
         self.structure = PDBParser().get_structure(pdb_id.upper(), fullfilename)
 
     def get_coords(self):
-        'Gets coordinates of backbone'
-        # Initialization
+        """Gets coordinates of backbone."""
+        # Initialization.
         backbone_coords = []
         backbone_atoms = []
 
-        # Computations
+        # Computations.
         for model in self.structure:
             for chain in model:
                 for residue in chain:
-                    if is_aa(residue, standard=True): # Check if amino acid
+                    if is_aa(residue, standard=True):  # Check if amino acid.
                         for atom in residue:
                             if atom.get_name() in backbone_ids:
                                 backbone_coords = backbone_coords + [atom.get_coord().tolist()]
                                 backbone_atoms = backbone_atoms + [atom.get_name()]
 
-        # Store results
+        # Store results.
         self.backbone_coords = np.array(backbone_coords)
         self.backbone_atoms = backbone_atoms
 
     def get_coords_extended(self, p=5):
-        'Adds the coordinates from interpolation betweens atoms of the backbone'
-        # Initialization
+        """Adds the coordinates from interpolation betweens atoms of the backbone."""
+        # Initialization.
         self.get_coords()
         C_coords = self.__get_coords_specific_atom(backbone_ids)
         new_coords = np.zeros((p*(C_coords.shape[0]-1), C_coords.shape[1]))
 
-        # Computations
+        # Computations.
         for i in range(1, C_coords.shape[0]):
             for k in range(p, 0, -1):
                 new_coords[p*i-k,:] = ((p-k+1)*C_coords[i-1,:] + k*C_coords[i,:])/(p+1)
 
-        # Store results
+        # Store results.
         self.backbone_coords_ext = np.concatenate((self.backbone_coords, new_coords), axis=0)
 
     def get_weights(self, weights='hydropathy', scaling=True):
-        'Gets weights of each position regarding associated amino-acid'
-        # Initialization
+        """Gets weights of each position regarding associated amino-acid."""
+        # Initialization.
         backbone_weights = []
         backbone_residues = []
 
-        # Select weights
+        # Select weights.
         weights = read_dict(os.path.join(datasets_path, weights + '.csv'))
-        weights = dict([key, float(value)] for key, value in weights.items()) # Convert values to float
+        weights = dict([key, float(value)] for key, value in weights.items())  # Convert values to float.
 
-        # Scaling
+        # Scaling.
         if scaling == True:
             weights = scale_dict(weights)
 
-        # Computations
+        # Computations.
         for model in self.structure:
             for chain in model:
                 for residue in chain:
-                    if is_aa(residue, standard=True): # Check if standard amino acid
+                    if is_aa(residue, standard=True):  # Check if standard amino acid.
                         local_residue = residue.get_resname()
                         local_weight = weights[local_residue]
                         for atom in residue:
@@ -113,28 +111,28 @@ class PDB_backbone(object):
                                 backbone_weights = backbone_weights + [local_weight]
                                 backbone_residues = backbone_residues + [local_residue]
 
-        # Store results
+        # Store results.
         self.backbone_weights = backbone_weights
         self.backbone_residues = backbone_residues
 
     def get_weights_extended(self, p, weights='hydropathy', scaling=True):
-        'Adds the weights from interpolation between atoms of the backbone'
-        # Initialization
+        """Adds the weights from interpolation between atoms of the backbone."""
+        # Initialization.
         self.get_weights(weights=weights, scaling=scaling)
         C_weights = self.__get_weights_specific_atom(backbone_ids)
         new_weights = np.zeros((p*(len(C_weights)-1)))
 
-        # Computations
+        # Computations.
         for i in range(1, len(C_weights)):
             for k in range(p, 0, -1):
                 new_weights[p*i-k] = ((p-k+1)*C_weights[i-1] + k*C_weights[i])/(p+1)
 
-        # Store results
+        # Store results.
         self.backbone_weights_ext = np.concatenate((self.backbone_weights, new_weights), axis=0)
 
     def __get_coords_specific_atom(self, specific_atoms):
-        'Extracts coordinates of a specific atom only'
-        for atom in specific_atoms: # Tries to accomplish the task on the first that works
+        """Extracts coordinates of a specific atom only."""
+        for atom in specific_atoms:  # Tries to accomplish the task on the first that works.
             try:
                 return np.array([self.backbone_coords[i,:]
                                  for i in range(self.backbone_coords.shape[0])
@@ -143,8 +141,8 @@ class PDB_backbone(object):
                 pass
 
     def __get_weights_specific_atom(self, specific_atoms):
-        'Extracts weights of a specific atom only'
-        for atom in specific_atoms: # Tries to accomplish the task on the first that works
+        """Extracts weights of a specific atom only."""
+        for atom in specific_atoms:  # Tries to accomplish the task on the first that works.
             try:
                 return [self.backbone_weights[i]
                         for i in range(len(self.backbone_weights))
@@ -153,15 +151,15 @@ class PDB_backbone(object):
                 pass
 
     def get_ligands(self):
-        'Stores ligands in a list'
-        # Initialization
+        """Stores ligands in a list."""
+        # Initialization.
         ligands = []
 
-        # Find ligands
+        # Find ligands.
         for model in self.structure:
             for chain in model:
                 for residue in chain:
                     ligands += [residue.get_resname()]
 
-        # Store unique IDs
+        # Store unique IDs.
         self.ligands = list(set(ligands))

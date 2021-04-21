@@ -1,4 +1,4 @@
-'Storing charge information in a dictionary'
+"""Storing charge information in a dictionary."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -8,7 +8,7 @@
 from enzynet.tools import dict_to_csv
 
 
-# Initialization
+# Initialization.
 charge = {}
 
 # Info from p. 51 of The cell: a molecular approach, by Hausman et al.
@@ -33,5 +33,5 @@ charge['TRP'] = 0
 charge['TYR'] = 0
 charge['VAL'] = 0
 
-# Save results
+# Save results.
 dict_to_csv(charge, '../charge.csv')

@@ -1,4 +1,4 @@
-'32x32x32 Enzynet architecture with uniform weights'
+"""32x32x32 Enzynet architecture with uniform weights."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -30,13 +30,13 @@ mode_dataset = 'full'
 mode_weights = 'unbalanced'
 
 ##----------------------------- Parameters -----------------------------------##
-# PDB
+# PDB.
 weights = []
 n_classes = 6
 n_channels = 1 + len(weights)
 scaling_weights = True
 
-# Volume
+# Volume.
 p = 0
 v_size = 32
 flips = (0.2, 0.2, 0.2)
@@ -44,24 +44,24 @@ max_radius = 40
 shuffle = True
 noise_treatment = False
 
-# Model
+# Model.
 batch_size = 32
 max_epochs = 200
 period_checkpoint = 50
 
-# Testing
+# Testing.
 voting_type = 'probabilities'
 augmentation = ['None', 'flips', 'weighted_flips']
 
-# Miscellenaous
+# Miscellaneous.
 current_file_name = os.path.basename(__file__)[:-3]
 stddev_conv3d = np.sqrt(2.0/(n_channels))
 
 ##------------------------------ Dataset -------------------------------------##
-# Load dictionary of labels
+# Load dictionary of labels.
 dictionary = read_dict('../../datasets/dataset_single.csv')
 
-# Load partitions
+# Load partitions.
 if mode_dataset == 'full':
     partition = read_dict('../../datasets/partition_single.csv')
 elif mode_dataset == 'reduced':
@@ -70,15 +70,15 @@ exec("partition['train'] = " + partition['train'])
 exec("partition['validation'] = " + partition['validation'])
 exec("partition['test'] = " + partition['test'])
 
-# Final computations
+# Final computations.
 partition['train'] = partition['train'] + partition['validation']
 partition['validation'] = partition['test']
 
-# Get class weights
+# Get class weights.
 class_weights = get_class_weights(dictionary, partition['train'],
                                   mode=mode_weights)
 
-# Training generator
+# Training generator.
 training_generator = \
     VolumeDataGenerator(list_enzymes=partition['train'],
                         labels=dictionary,
@@ -92,7 +92,7 @@ training_generator = \
                         weights=weights,
                         scaling_weights=scaling_weights)
 
-# Validation generator
+# Validation generator.
 validation_generator = \
     VolumeDataGenerator(list_enzymes=partition['validation'],
                         labels=dictionary,
@@ -106,11 +106,11 @@ validation_generator = \
                         weights=weights,
                         scaling_weights=scaling_weights)
 
-# Check if data has been precomputed
+# Check if data has been precomputed.
 training_generator.check_precomputed()
 
 ##----------------------------- Testing --------------------------------------##
-# Voting object
+# Voting object.
 predictions = \
     Voting(list_enzymes=partition['test'],
            labels=dictionary,
@@ -124,10 +124,10 @@ predictions = \
            scaling_weights=scaling_weights)
 
 ##------------------------------ Model ---------------------------------------##
-# Create
+# Create.
 model = Sequential()
 
-# Add layers
+# Add layers.
 model.add(Conv3D(filters=32,
                  kernel_size=9,
                  strides=2,
@@ -175,21 +175,21 @@ model.add(Dense(units=n_classes,
 
 model.add(Activation('softmax'))
 
-# Track accuracy and loss in real-time
+# Track accuracy and loss in real-time.
 history = MetricsHistory(saving_path=current_file_name + '.csv')
 
-# Checkpoints
+# Checkpoints.
 checkpoints = ModelCheckpoint('checkpoints/' + current_file_name + '_{epoch:02d}' + '.hd5f',
                               save_weights_only=True,
                               period=period_checkpoint)
 
 if mode_run == 'train':
-    # Compile
+    # Compile.
     model.compile(optimizer=Adam(lr=0.001, decay=0.00016667),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 
-    # Train
+    # Train.
     model.fit_generator(generator=training_generator,
                         epochs=max_epochs,
                         verbose=1,
@@ -201,16 +201,16 @@ if mode_run == 'train':
                         max_queue_size=30)
 
 if mode_run == 'test':
-    # Load weights
+    # Load weights.
     weights_path = \
         'checkpoints/' + current_file_name + '_{0:02d}'.format(max_epochs) + '.hd5f'
     model.load_weights(weights_path)
 
-# Predict
+# Predict.
 predictions.predict(model)
 
-# Compute indicators
+# Compute indicators.
 predictions.get_assessment()
 
-# Clear session
+# Clear session.
 K.clear_session()

@@ -1,4 +1,4 @@
-'Additional functions for Keras'
+"""Additional functions for Keras."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -32,9 +32,7 @@ methods = ['confusion_matrix', 'accuracy',
 
 
 class Voting(VolumeDataGenerator):
-    """
-    Predicts classes of testing enzymes
-
+    """Predicts classes of testing enzymes.
 
     Parameters
     ----------
@@ -81,13 +79,12 @@ class Voting(VolumeDataGenerator):
     scaling_weights : boolean (optional, default is True)
         If True, divides all weights by the weight that is maximum in absolute
         value.
-
     """
     def __init__(self, list_enzymes, labels, voting_type='probabilities', augmentation=['None'],
                  v_size=32, directory_precomputed=precomputed_path,
                  directory_pdb=PDB_path, shuffle=True, p=5, max_radius=40,
                  noise_treatment=False, weights=[], scaling_weights=True):
-        'Initialization'
+        """Initialization."""
         VolumeDataGenerator.__init__(self, list_enzymes, labels, v_size=v_size, flips=(0, 0, 0),
                                      batch_size=1, directory_precomputed=directory_precomputed,
                                      directory_pdb=directory_pdb, shuffle=shuffle, p=p,
@@ -97,13 +94,13 @@ class Voting(VolumeDataGenerator):
         self.augmentation = augmentation
 
     def predict(self, model):
-        'Predicts classes of testing enzymes'
-        # Initialization
+        """Predicts classes of testing enzymes."""
+        # Initialization.
         self.y_pred = np.empty((len(self.list_enzymes), len(self.augmentation)), dtype=int)
         self.y_true = np.array([self.labels[enzyme] for enzyme in self.list_enzymes], dtype=int)
         self.y_id = np.array(self.list_enzymes)
 
-        # Computations
+        # Computations.
         for j, augmentation in enumerate(self.augmentation):
             print('Augmentation: {0}'.format(augmentation))
             for i, enzyme in enumerate(tqdm(self.list_enzymes)):
@@ -111,7 +108,7 @@ class Voting(VolumeDataGenerator):
                     self.__vote(model, enzyme, augmentation)
 
     def get_assessment(self):
-        'Compute several performance indicators'
+        """Compute several performance indicators."""
         for j, augmentation in enumerate(self.augmentation):
             print('Augmentation: {0}'.format(augmentation))
             indicators = Indicators(self.y_true, self.y_pred[:,j])
@@ -119,81 +116,78 @@ class Voting(VolumeDataGenerator):
                 getattr(indicators, method)()
 
     def __vote(self, model, enzyme, augmentation):
-        # Initialization
+        # Initialization.
         probability = np.zeros((1, 6))
 
-        # Nothing
+        # Nothing.
         if augmentation == 'None':
-            # Store configuration
+            # Store configuration.
             self.flips = (0, 0, 0)
 
-            # Generate volume
+            # Generate volume.
             X = self._VolumeDataGenerator__data_augmentation([enzyme])[0]
 
-            # Voting by adding probabilities
+            # Voting by adding probabilities.
             if self.voting_type == 'probabilities':
                 probability += model.predict_proba(X, verbose=0)
             elif self.voting_type == 'classes':
                 probability[0, model.predict_classes(X, verbose=0)[0]] += 1
 
-        # Flips
+        # Flips.
         elif augmentation == 'flips':
-            # Generate all possibilities
+            # Generate all possibilities.
             generator_flips = itertools.product(range(2), repeat=3)
 
-            # Computations
+            # Computations.
             for flip in generator_flips:
-                # Store configuration
+                # Store configuration.
                 self.flips = flip
 
-                # Generate volume
+                # Generate volume.
                 X = self._VolumeDataGenerator__data_augmentation([enzyme])[0]
 
-                # Voting by adding probabilities
+                # Voting by adding probabilities.
                 if self.voting_type == 'probabilities':
                     probability += model.predict_proba(X, verbose=0)
                 elif self.voting_type == 'classes':
                     probability[0, model.predict_classes(X, verbose=0)[0]] += 1
 
-        # Weighted flips
+        # Weighted flips.
         elif augmentation == 'weighted_flips':
-            # Generate all possibilities
+            # Generate all possibilities.
             generator_flips = itertools.product(range(2), repeat=3)
 
-            # Computations
+            # Computations.
             for flip in generator_flips:
-                # Store configuration
+                # Store configuration.
                 self.flips = flip
                 factor = 1/(sum(flip)+1)
 
-                # Generate volume
+                # Generate volume.
                 X = self._VolumeDataGenerator__data_augmentation([enzyme])[0]
 
-                # Voting by adding probabilities
+                # Voting by adding probabilities.
                 if self.voting_type == 'probabilities':
                     probability += factor * model.predict_proba(X, verbose=0)
                 elif self.voting_type == 'classes':
                     probability[0, model.predict_classes(X, verbose=0)[0]] += factor * 1
 
-        # Predict label
+        # Predict label.
         output_label = np.argmax(probability[0,:]) + 1
 
         return output_label
 
 
 class MetricsHistory(Callback):
-    """
-    Tracks accuracy and loss in real-time, and plots it.
-
+    """Tracks accuracy and loss in real-time, and plots it.
 
     Parameters
     ----------
     saving_path : string (optional, default is 'test.csv')
         Full path to output csv file.
-
     """
     def __init__(self, saving_path='test.csv'):
-        # Initialization
+        # Initialization.
         self.display = RealTimePlot(max_entries=200)
         self.saving_path = saving_path
         self.epochs = []
@@ -203,21 +197,21 @@ class MetricsHistory(Callback):
         self.val_accs = []
 
     def on_epoch_end(self, epoch, logs={}):
-        # Store
+        # Store.
         self.epochs += [epoch]
         self.losses += [logs.get('loss')]
         self.val_losses += [logs.get('val_loss')]
         self.accs += [logs.get('acc')]
         self.val_accs += [logs.get('val_acc')]
 
-        # Add point to plot
+        # Add point to plot.
         self.display.add(x=epoch,
                          y_tr=logs.get('acc'),
                          y_val=logs.get('val_acc'))
         plt.pause(0.001)
 
 
-        # Save to file
+        # Save to file.
         dictionary = {'epochs': self.epochs,
                       'losses': self.losses,
                       'val_losses': self.val_losses,
