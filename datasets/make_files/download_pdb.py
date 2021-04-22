@@ -6,9 +6,6 @@
 # MIT License
 
 import pandas as pa
-import csv
-from enzynet.tools import read_dict
-
 
 # Read csv files.
 df = pa.read_csv('../dataset_all.csv', header=None)

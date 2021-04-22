@@ -6,8 +6,6 @@
 # MIT License
 
 import csv
-import threading
-
 
 csv.field_size_limit(10**7)
 

@@ -24,7 +24,6 @@ from keras.regularizers import l2
 
 from keras import backend as K
 
-
 mode_run = 'test'
 mode_dataset = 'full'
 mode_weights = 'unbalanced'

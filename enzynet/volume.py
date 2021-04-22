@@ -11,11 +11,9 @@ import os.path
 import numpy as np
 
 from tqdm import tqdm
-from sklearn.neighbors import KDTree
 from sklearn.decomposition import PCA
 
 from enzynet.PDB import PDB_backbone
-
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 precomputed_path = os.path.join(current_directory, '../files/precomputed/')

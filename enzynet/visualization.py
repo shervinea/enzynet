@@ -8,8 +8,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from mpl_toolkits.mplot3d import Axes3D
-
 from enzynet.PDB import PDB_backbone
 from enzynet.volume import adjust_size, coords_to_volume, coords_center_to_zero, weights_to_volume
 

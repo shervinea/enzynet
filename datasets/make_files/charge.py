@@ -7,7 +7,6 @@
 
 from enzynet.tools import dict_to_csv
 
-
 # Initialization.
 charge = {}
 

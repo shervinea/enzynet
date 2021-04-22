@@ -4,12 +4,10 @@
 #          Shervine Amidi <firstname@stanford.edu>
 # MIT License
 
-import time, random
-import math
+import time
 
 from collections import deque
 from matplotlib import pyplot as plt
-
 
 start = time.time()
 

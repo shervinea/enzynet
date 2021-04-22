@@ -16,7 +16,6 @@ from Bio.PDB import *
 
 from enzynet.tools import read_dict, scale_dict
 
-
 warnings.filterwarnings("ignore", category=PDBConstructionWarning)
 
 backbone_ids = ['C', 'N', 'CA']

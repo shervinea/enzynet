@@ -21,7 +21,6 @@ from matplotlib import pyplot as plt
 
 from tqdm import tqdm
 
-
 current_directory = os.path.dirname(os.path.abspath(__file__))
 precomputed_path = os.path.join(current_directory, '../files/precomputed/')
 PDB_path = os.path.join(current_directory, '../files/PDB/')
