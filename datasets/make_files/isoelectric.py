@@ -5,7 +5,7 @@
 
 # MIT License
 
-from enzynet.tools import dict_to_csv
+from enzynet import tools
 
 # Info from chapter 24 of Organic Chemistry (5th edition), by Wade.
 isoelectric = {
@@ -36,4 +36,4 @@ neutral_value = 6.0
 isoelectric = {k: v - neutral_value for k, v in isoelectric.items()}
 
 # Save results.
-dict_to_csv(isoelectric, '../isoelectric.csv')
+tools.dict_to_csv(isoelectric, '../isoelectric.csv')

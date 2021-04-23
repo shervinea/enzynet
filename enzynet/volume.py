@@ -1,4 +1,4 @@
-'Volume generation and augmentation'
+"""Volume generation and augmentation."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
@@ -10,10 +10,9 @@ import os.path
 
 import numpy as np
 
+from enzynet import pdb
+from sklearn import decomposition
 from tqdm import tqdm
-from sklearn.decomposition import PCA
-
-from enzynet.pdb import PDBBackbone
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 precomputed_path = os.path.join(current_directory, '../files/precomputed/')
@@ -181,7 +180,7 @@ class VolumeDataGenerator(keras.utils.Sequence):
                 local_weights += [local_weight]  # Store.
 
             # PCA.
-            coords = PCA(n_components=3).fit_transform(coords)
+            coords = decomposition.PCA(n_components=3).fit_transform(coords)
 
             # Do flip.
             coords_temp = flip_around_axis(coords, axis=self.flips)
@@ -289,7 +288,7 @@ def save_coords_weights(pdb_id, list_weights, desired_p, scaling_weights,
                         source_path, dest_path):
     """Computes coordinates and weights and saves them into .npy files."""
     # Initialize local PDB.
-    local_PDB = PDBBackbone(pdb_id=pdb_id, path=source_path)
+    local_PDB = pdb.PDBBackbone(pdb_id=pdb_id, path=source_path)
 
     # Coordinates.
     local_PDB.get_coords_extended(p=desired_p)  # Compute.

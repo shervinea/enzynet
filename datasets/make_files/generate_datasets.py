@@ -8,9 +8,9 @@
 import numpy as np
 import pandas as pa
 
+from enzynet import pdb
+from enzynet import tools
 from tqdm import tqdm
-from enzynet.pdb import PDBBackbone
-from enzynet.tools import read_dict, dict_to_csv
 
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017.
 
@@ -29,7 +29,7 @@ for i in range(1, n_classes+1):
     for k, enzyme in enumerate(tqdm(list_enzymes)):
         try:
             # Load local enzyme.
-            local_enzyme = PDBBackbone(enzyme)
+            local_enzyme = pdb.PDBBackbone(enzyme)
             local_enzyme.get_coords()
 
             # Look for problem.
@@ -61,11 +61,11 @@ for i in range(1, n_classes+1):
             labels[entry] = [i]
 
 # # Save results.
-# dict_to_csv(labels, '../dataset_all.csv')  # DONE 18-03-2017.
+# tools.dict_to_csv(labels, '../dataset_all.csv')  # DONE 18-03-2017.
 
 ##--------- Dictionary with single-label PDBs in dataset_single.csv ----------##
 # Initialization.
-labels_temp = read_dict('../dataset_all.csv')
+labels_temp = tools.read_dict('../dataset_all.csv')
 labels = {}
 
 # Computations.
@@ -74,11 +74,11 @@ for entry in labels_temp:
         labels[entry] = int(labels_temp[entry][1])  # Convert list to scalar.
 
 # # Save results.
-# dict_to_csv(labels, '../dataset_single.csv')  # DONE 18-03-2017.
+# tools.dict_to_csv(labels, '../dataset_single.csv')  # DONE 18-03-2017.
 
 ##---------- Dictionary with multi-label PDBs in dataset_multi.csv -----------##
 # Initialization.
-labels_temp = read_dict('../dataset_all.csv')
+labels_temp = tools.read_dict('../dataset_all.csv')
 labels = {}
 
 # Computations.
@@ -87,18 +87,18 @@ for entry in labels_temp:
         labels[entry] = labels_temp[entry]
 
 # # Save results.
-# dict_to_csv(labels, '../dataset_multi.csv')  # DONE 18-03-2017.
+# tools.dict_to_csv(labels, '../dataset_multi.csv')  # DONE 18-03-2017.
 
 ##----- Dict of ligands pointing to associated PDB in ligands_to_pdb.csv -----##
 # Initialization.
-pdb_all = read_dict('../dataset_all.csv')
+pdb_all = tools.read_dict('../dataset_all.csv')
 pdb_all = list(pdb_all.keys())
 ligands = {}
 
 # Computations.
 for enzyme in tqdm(pdb_all):
     # Load local enzyme.
-    local_enzyme = PDBBackbone(enzyme)
+    local_enzyme = pdb.PDBBackbone(enzyme)
 
     # Get ligands.
     local_enzyme.get_ligands()
@@ -111,18 +111,18 @@ for enzyme in tqdm(pdb_all):
             ligands[local_ligand] = [enzyme]
 
 # # Save results.
-# dict_to_csv(ligands, '../ligands_to_pdb.csv')
+# tools.dict_to_csv(ligands, '../ligands_to_pdb.csv')
 
 ##---- Dict of PDBs pointing to associated ligands in pdb_to_ligands.csv -----##
 # Initialization.
-pdb_all = read_dict('../dataset_all.csv')
+pdb_all = tools.read_dict('../dataset_all.csv')
 pdb_all = list(pdb_all.keys())
 pdb = {}
 
 # Computations.
 for enzyme in tqdm(pdb_all):
     # Load local enzyme.
-    local_enzyme = PDBBackbone(enzyme)
+    local_enzyme = pdb.PDBBackbone(enzyme)
 
     # Get ligands.
     local_enzyme.get_ligands()
@@ -131,11 +131,11 @@ for enzyme in tqdm(pdb_all):
     pdb[enzyme] = local_enzyme.ligands
 
 # # Save results.
-# dict_to_csv(pdb, '../pdb_to_ligands.csv')
+# tools.dict_to_csv(pdb, '../pdb_to_ligands.csv')
 
 ##---------- Split single-label dataset in train/validation/test -------------##
 # Initialization.
-labels_temp = read_dict('../dataset_single.csv')
+labels_temp = tools.read_dict('../dataset_single.csv')
 pdb_ids = list(labels_temp)
 partition = {}
 
@@ -159,11 +159,11 @@ test_ids = [pdb_ids[i] for i in indexes[int(x*len(pdb_ids)):]]
 partition['test'] = test_ids
 
 # # Save results.
-# dict_to_csv(partition, '../partition_single.csv')  # DONE 18-03-2017.
+# tools.dict_to_csv(partition, '../partition_single.csv')  # DONE 18-03-2017.
 
 ##------ Create reduced single-label train/validation/test sets --------------##
 # Initialization.
-partition = read_dict('../partition_single.csv')
+partition = tools.read_dict('../partition_single.csv')
 partition_red = {}
 
 # Parameters.
@@ -191,4 +191,4 @@ test_ids = [partition['test'][i] for i in indexes[0:int(factor_reduction*len(ind
 partition_red['test'] = test_ids
 
 # # Save results.
-# dict_to_csv(partition_red, '../partition_single_red.csv')  # DONE 18-03-2017.
+# tools.dict_to_csv(partition_red, '../partition_single_red.csv')  # DONE 18-03-2017.

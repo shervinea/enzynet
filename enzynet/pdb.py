@@ -11,12 +11,12 @@ import warnings
 
 import numpy as np
 
-from Bio.PDB.PDBExceptions import PDBConstructionWarning
-from Bio.PDB import *
+from Bio.PDB import PDBExceptions
+from Bio.PDB import PDBParser
+from Bio.PDB import Polypeptide
+from enzynet import tools
 
-from enzynet.tools import read_dict, scale_dict
-
-warnings.filterwarnings("ignore", category=PDBConstructionWarning)
+warnings.filterwarnings("ignore", category=PDBExceptions.PDBConstructionWarning)
 
 backbone_ids = ['C', 'N', 'CA']
 
@@ -47,7 +47,7 @@ class PDBBackbone(object):
             urllib.request.urlretrieve('http://files.rcsb.org/download/' +
                                         pdb_id.upper() + '.pdb',
                                         fullfilename)
-        self.structure = PDBParser().get_structure(pdb_id.upper(), fullfilename)
+        self.structure = PDBParser.PDBParser().get_structure(pdb_id.upper(), fullfilename)
 
     def get_coords(self):
         """Gets coordinates of backbone."""
@@ -59,7 +59,7 @@ class PDBBackbone(object):
         for model in self.structure:
             for chain in model:
                 for residue in chain:
-                    if is_aa(residue, standard=True):  # Check if amino acid.
+                    if Polypeptide.is_aa(residue, standard=True):  # Check if amino acid.
                         for atom in residue:
                             if atom.get_name() in backbone_ids:
                                 backbone_coords = backbone_coords + [atom.get_coord().tolist()]
@@ -91,18 +91,18 @@ class PDBBackbone(object):
         backbone_residues = []
 
         # Select weights.
-        weights = read_dict(os.path.join(datasets_path, weights + '.csv'))
+        weights = tools.read_dict(os.path.join(datasets_path, weights + '.csv'))
         weights = dict([key, float(value)] for key, value in weights.items())  # Convert values to float.
 
         # Scaling.
         if scaling == True:
-            weights = scale_dict(weights)
+            weights = tools.scale_dict(weights)
 
         # Computations.
         for model in self.structure:
             for chain in model:
                 for residue in chain:
-                    if is_aa(residue, standard=True):  # Check if standard amino acid.
+                    if Polypeptide.is_aa(residue, standard=True):  # Check if standard amino acid.
                         local_residue = residue.get_resname()
                         local_weight = weights[local_residue]
                         for atom in residue:

@@ -5,7 +5,7 @@
 
 # MIT License
 
-from enzynet.tools import dict_to_csv
+from enzynet import tools
 
 # Values from J. Kyte et al. paper.
 hydropathy = {
@@ -32,4 +32,4 @@ hydropathy = {
 }
 
 # Save results.
-dict_to_csv(hydropathy, '../hydropathy.csv')
+tools.dict_to_csv(hydropathy, '../hydropathy.csv')

@@ -8,35 +8,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from enzynet.pdb import PDBBackbone
-from enzynet.volume import adjust_size, coords_to_volume, coords_center_to_zero, weights_to_volume
+from enzynet import pdb
+from enzynet import volume
 
 
 def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
                   max_radius=40, noise_treatment=True):
     """Plots PDB in a volume and saves it in a file."""
     # Get coordinates.
-    pdb = PDBBackbone(pdb_id)
-    pdb.get_coords_extended(p=p)
+    pdb_backbone = pdb.PDBBackbone(pdb_id)
+    pdb_backbone.get_coords_extended(p=p)
 
     if weights != None:
-        pdb.get_weights_extended(p=p, weights=weights)
+        pdb_backbone.get_weights_extended(p=p, weights=weights)
 
     # Center to 0.
-    coords = coords_center_to_zero(pdb.backbone_coords_ext)
+    coords = volume.coords_center_to_zero(pdb_backbone.backbone_coords_ext)
 
     # Adjust size.
-    coords = adjust_size(coords, v_size, max_radius)
+    coords = volume.adjust_size(coords, v_size, max_radius)
 
     if weights == None:
         # Convert to volume.
-        volume = coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
+        vol = volume.coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
     else:
         # Converts to volume of weights.
-        volume = weights_to_volume(coords, pdb.backbone_weights_ext, v_size,
-                                   noise_treatment=noise_treatment)
+        vol = volume.weights_to_volume(coords, pdb_backbone.backbone_weights_ext,
+                                       v_size, noise_treatment=noise_treatment)
     # Plot.
-    plot_volume(volume, pdb_id, v_size, num, weights=weights)
+    plot_volume(vol, pdb_id, v_size, num, weights=weights)
 
 
 # 3D plot, sources: http://stackoverflow.com/a/35978146/4124317

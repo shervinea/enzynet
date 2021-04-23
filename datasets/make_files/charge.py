@@ -5,7 +5,7 @@
 
 # MIT License
 
-from enzynet.tools import dict_to_csv
+from enzynet import tools
 
 # Info from p. 51 of The cell: a molecular approach, by Hausman et al.
 charge = {
@@ -32,4 +32,4 @@ charge = {
 }
 
 # Save results.
-dict_to_csv(charge, '../charge.csv')
+tools.dict_to_csv(charge, '../charge.csv')

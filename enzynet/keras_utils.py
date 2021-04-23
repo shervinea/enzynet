@@ -10,15 +10,12 @@ import itertools
 
 import numpy as np
 
+from enzynet import indicators
+from enzynet import real_time
+from enzynet import tools
+from enzynet import volume
 from keras.callbacks import Callback
-
-from enzynet.indicators import Indicators
-from enzynet.real_time import RealTimePlot
-from enzynet.tools import dict_to_csv
-from enzynet.volume import VolumeDataGenerator
-
 from matplotlib import pyplot as plt
-
 from tqdm import tqdm
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -30,7 +27,7 @@ methods = ['confusion_matrix', 'accuracy',
            'macro_precision', 'macro_recall', 'macro_f1']
 
 
-class Voting(VolumeDataGenerator):
+class Voting(volume.VolumeDataGenerator):
     """Predicts classes of testing enzymes.
 
     Parameters
@@ -84,7 +81,7 @@ class Voting(VolumeDataGenerator):
                  directory_pdb=PDB_path, shuffle=True, p=5, max_radius=40,
                  noise_treatment=False, weights=[], scaling_weights=True):
         """Initialization."""
-        VolumeDataGenerator.__init__(self, list_enzymes, labels, v_size=v_size, flips=(0, 0, 0),
+        volume.VolumeDataGenerator.__init__(self, list_enzymes, labels, v_size=v_size, flips=(0, 0, 0),
                                      batch_size=1, directory_precomputed=directory_precomputed,
                                      directory_pdb=directory_pdb, shuffle=shuffle, p=p,
                                      max_radius=max_radius, noise_treatment=noise_treatment,
@@ -110,9 +107,9 @@ class Voting(VolumeDataGenerator):
         """Compute several performance indicators."""
         for j, augmentation in enumerate(self.augmentation):
             print('Augmentation: {0}'.format(augmentation))
-            indicators = Indicators(self.y_true, self.y_pred[:,j])
+            ind = indicators.Indicators(self.y_true, self.y_pred[:,j])
             for method in methods:
-                getattr(indicators, method)()
+                getattr(ind, method)()
 
     def __vote(self, model, enzyme, augmentation):
         # Initialization.
@@ -187,7 +184,7 @@ class MetricsHistory(Callback):
     """
     def __init__(self, saving_path='test.csv'):
         # Initialization.
-        self.display = RealTimePlot(max_entries=200)
+        self.display = real_time.RealTimePlot(max_entries=200)
         self.saving_path = saving_path
         self.epochs = []
         self.losses = []
@@ -216,4 +213,4 @@ class MetricsHistory(Callback):
                       'val_losses': self.val_losses,
                       'accs': self.accs,
                       'val_accs': self.val_accs}
-        dict_to_csv(dictionary, self.saving_path)
+        tools.dict_to_csv(dictionary, self.saving_path)
