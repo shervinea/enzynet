@@ -5,10 +5,10 @@
 
 # MIT License
 
-import pandas as pa
+import pandas as pd
 
 # Read csv files.
-df = pa.read_csv('../dataset_all.csv', header=None)
+df = pd.read_csv('../dataset_all.csv', header=None)
 
 # Only keep PDB IDs.
 df = df[0]+', '

@@ -6,7 +6,7 @@
 # MIT License
 
 import numpy as np
-import pandas as pa
+import pandas as pd
 
 from enzynet import pdb
 from enzynet import tools
@@ -22,7 +22,7 @@ n_classes = 6
 for i in range(1, n_classes+1):
     # Initialization.
     errors = []  # List of indexes with error.
-    enzymes = pa.read_table('raw/' + str(i) + '.txt', header=None)  # Load PDB IDs.
+    enzymes = pd.read_table('raw/' + str(i) + '.txt', header=None)  # Load PDB IDs.
     list_enzymes = enzymes.loc[:,0].tolist()
 
     # Look for errors.
@@ -50,7 +50,7 @@ labels = {}
 # Computations.
 for i in range(1, n_classes+1):
     # Load PDB IDs for each class.
-    enzymes = pa.read_table(str(i) + '.txt', header=None)
+    enzymes = pd.read_table(str(i) + '.txt', header=None)
     enzymes = enzymes[0].tolist()
 
     # Add entries to dict.
