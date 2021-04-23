@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.decomposition import PCA
 
-from enzynet.PDB import PDBBackbone
+from enzynet.pdb import PDBBackbone
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 precomputed_path = os.path.join(current_directory, '../files/precomputed/')

@@ -8,7 +8,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from enzynet.PDB import PDBBackbone
+from enzynet.pdb import PDBBackbone
 from enzynet.volume import adjust_size, coords_to_volume, coords_center_to_zero, weights_to_volume
 
 

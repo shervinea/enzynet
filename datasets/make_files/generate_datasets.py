@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pa
 
 from tqdm import tqdm
-from enzynet.PDB import PDBBackbone
+from enzynet.pdb import PDBBackbone
 from enzynet.tools import read_dict, dict_to_csv
 
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017.
