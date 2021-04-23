@@ -25,7 +25,7 @@ PDB_path = os.path.join(current_directory, '../files/PDB/')
 datasets_path = os.path.join(current_directory, '../datasets/')
 
 
-class PDB_backbone(object):
+class PDBBackbone(object):
     """Functions aimed at information extraction from PDB files.
 
     Parameters

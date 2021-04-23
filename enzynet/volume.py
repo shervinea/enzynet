@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.decomposition import PCA
 
-from enzynet.PDB import PDB_backbone
+from enzynet.PDB import PDBBackbone
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 precomputed_path = os.path.join(current_directory, '../files/precomputed/')
@@ -289,7 +289,7 @@ def save_coords_weights(pdb_id, list_weights, desired_p, scaling_weights,
                         source_path, dest_path):
     """Computes coordinates and weights and saves them into .npy files."""
     # Initialize local PDB.
-    local_PDB = PDB_backbone(pdb_id=pdb_id, path=source_path)
+    local_PDB = PDBBackbone(pdb_id=pdb_id, path=source_path)
 
     # Coordinates.
     local_PDB.get_coords_extended(p=desired_p)  # Compute.

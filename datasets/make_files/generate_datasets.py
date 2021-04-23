@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pa
 
 from tqdm import tqdm
-from enzynet.PDB import PDB_backbone
+from enzynet.PDB import PDBBackbone
 from enzynet.tools import read_dict, dict_to_csv
 
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017.
@@ -29,7 +29,7 @@ for i in range(1, n_classes+1):
     for k, enzyme in enumerate(tqdm(list_enzymes)):
         try:
             # Load local enzyme.
-            local_enzyme = PDB_backbone(enzyme)
+            local_enzyme = PDBBackbone(enzyme)
             local_enzyme.get_coords()
 
             # Look for problem.
@@ -98,7 +98,7 @@ ligands = {}
 # Computations.
 for enzyme in tqdm(pdb_all):
     # Load local enzyme.
-    local_enzyme = PDB_backbone(enzyme)
+    local_enzyme = PDBBackbone(enzyme)
 
     # Get ligands.
     local_enzyme.get_ligands()
@@ -122,7 +122,7 @@ pdb = {}
 # Computations.
 for enzyme in tqdm(pdb_all):
     # Load local enzyme.
-    local_enzyme = PDB_backbone(enzyme)
+    local_enzyme = PDBBackbone(enzyme)
 
     # Get ligands.
     local_enzyme.get_ligands()

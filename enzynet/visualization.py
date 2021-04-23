@@ -8,7 +8,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from enzynet.PDB import PDB_backbone
+from enzynet.PDB import PDBBackbone
 from enzynet.volume import adjust_size, coords_to_volume, coords_center_to_zero, weights_to_volume
 
 
@@ -16,7 +16,7 @@ def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
                   max_radius=40, noise_treatment=True):
     """Plots PDB in a volume and saves it in a file."""
     # Get coordinates.
-    pdb = PDB_backbone(pdb_id)
+    pdb = PDBBackbone(pdb_id)
     pdb.get_coords_extended(p=p)
 
     if weights != None:
