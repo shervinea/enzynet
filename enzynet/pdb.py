@@ -95,7 +95,7 @@ class PDBBackbone(object):
         weights = dict([key, float(value)] for key, value in weights.items())  # Convert values to float.
 
         # Scaling.
-        if scaling == True:
+        if scaling is True:
             weights = tools.scale_dict(weights)
 
         # Computations.

@@ -28,7 +28,7 @@ def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
     # Adjust size.
     coords = volume.adjust_size(coords, v_size, max_radius)
 
-    if weights == None:
+    if weights is None:
         # Convert to volume.
         vol = volume.coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
     else:
@@ -62,7 +62,7 @@ def plot_volume(volume, pdb_id, v_size, num, weights=None):
     ax.set_zticklabels([])
 
     # Plot.
-    if weights == None:
+    if weights is None:
         plot_matrix(ax, volume)
     else:
         plot_matrix_of_weights(ax, volume)

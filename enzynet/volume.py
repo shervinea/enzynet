@@ -132,7 +132,7 @@ class VolumeDataGenerator(keras.utils.Sequence):
     def on_epoch_end(self):
         """Updates indexes after each epoch."""
         self.indexes = np.arange(len(self.list_enzymes))
-        if self.shuffle == True:
+        if self.shuffle is True:
             np.random.shuffle(self.indexes)
 
     def __len__(self):
@@ -222,7 +222,7 @@ def weights_to_volume(coords, weights, v_size, noise_treatment=False):
     volume[tuple(coords[mask].T)] = weights[mask] if type(weights) != int else weights
 
     # Remove noise.
-    if noise_treatment == True:
+    if noise_treatment is True:
         volume = remove_noise(coords, volume)
 
     return volume
@@ -268,7 +268,7 @@ def remove_noise(coords, volume):
         if all(valeur < v_size-1 for valeur in coords[i,:]) and \
            all(valeur > 0 for valeur in coords[i,:]):  # Point inside volume.
             if np.array_equal(volume[coords[i,0]-1:coords[i,0]+2,coords[i,1]-1:coords[i,1]+2,coords[i,2]-1:coords[i,2]+2],
-                              np.pad(np.array([[[1]]]),1,'constant') * volume[tuple(coords[i])]) == True:  # Isolated point.
+                              np.pad(np.array([[[1]]]),1,'constant') * volume[tuple(coords[i])]) is True:  # Isolated point.
                 volume[coords[i,0]-1:coords[i,0]+2,
                        coords[i,1]-1:coords[i,1]+2,
                        coords[i,2]-1:coords[i,2]+2] = np.zeros((3,3,3))
