@@ -5,6 +5,8 @@
 
 # MIT License
 
+from typing import List, Sequence, Text
+
 import os.path
 import urllib.request
 import warnings
@@ -37,7 +39,7 @@ class PDBBackbone(object):
         Path where the PDB file is located, or where the PDB file should be
         downloaded.
     """
-    def __init__(self, pdb_id, path=PDB_path):
+    def __init__(self, pdb_id: Text, path: Text = PDB_path) -> None:
         """Initialization."""
         self.pdb_id = pdb_id.upper()
         fullfilename = os.path.join(path, pdb_id.lower() + '.pdb')
@@ -49,7 +51,7 @@ class PDBBackbone(object):
                                         fullfilename)
         self.structure = PDBParser.PDBParser().get_structure(pdb_id.upper(), fullfilename)
 
-    def get_coords(self):
+    def get_coords(self) -> None:
         """Gets coordinates of backbone."""
         # Initialization.
         backbone_coords = []
@@ -69,7 +71,7 @@ class PDBBackbone(object):
         self.backbone_coords = np.array(backbone_coords)
         self.backbone_atoms = backbone_atoms
 
-    def get_coords_extended(self, p=5):
+    def get_coords_extended(self, p: int = 5) -> None:
         """Adds the coordinates from interpolation betweens atoms of the backbone."""
         # Initialization.
         self.get_coords()
@@ -84,14 +86,15 @@ class PDBBackbone(object):
         # Store results.
         self.backbone_coords_ext = np.concatenate((self.backbone_coords, new_coords), axis=0)
 
-    def get_weights(self, weights='hydropathy', scaling=True):
+    def get_weights(self, weight_type: Text = 'hydropathy',
+                    scaling: bool = True) -> None:
         """Gets weights of each position regarding associated amino-acid."""
         # Initialization.
         backbone_weights = []
         backbone_residues = []
 
         # Select weights.
-        weights = tools.read_dict(os.path.join(datasets_path, weights + '.csv'))
+        weights = tools.read_dict(os.path.join(datasets_path, weight_type + '.csv'))
         weights = dict([key, float(value)] for key, value in weights.items())  # Convert values to float.
 
         # Scaling.
@@ -114,10 +117,11 @@ class PDBBackbone(object):
         self.backbone_weights = backbone_weights
         self.backbone_residues = backbone_residues
 
-    def get_weights_extended(self, p, weights='hydropathy', scaling=True):
+    def get_weights_extended(self, p: int, weight_type: Text = 'hydropathy',
+                             scaling: bool = True) -> None:
         """Adds the weights from interpolation between atoms of the backbone."""
         # Initialization.
-        self.get_weights(weights=weights, scaling=scaling)
+        self.get_weights(weight_type=weight_type, scaling=scaling)
         C_weights = self.__get_weights_specific_atom(backbone_ids)
         new_weights = np.zeros((p*(len(C_weights)-1)))
 
@@ -129,7 +133,10 @@ class PDBBackbone(object):
         # Store results.
         self.backbone_weights_ext = np.concatenate((self.backbone_weights, new_weights), axis=0)
 
-    def __get_coords_specific_atom(self, specific_atoms):
+    def __get_coords_specific_atom(
+            self,
+            specific_atoms: Sequence[Text]
+    ) -> np.ndarray:
         """Extracts coordinates of a specific atom only."""
         for atom in specific_atoms:  # Tries to accomplish the task on the first that works.
             try:
@@ -139,7 +146,10 @@ class PDBBackbone(object):
             except:
                 pass
 
-    def __get_weights_specific_atom(self, specific_atoms):
+    def __get_weights_specific_atom(
+            self,
+            specific_atoms: Sequence[Text]
+    ) -> List[float]:
         """Extracts weights of a specific atom only."""
         for atom in specific_atoms:  # Tries to accomplish the task on the first that works.
             try:
@@ -149,7 +159,7 @@ class PDBBackbone(object):
             except:
                 pass
 
-    def get_ligands(self):
+    def get_ligands(self) -> None:
         """Stores ligands in a list."""
         # Initialization.
         ligands = []

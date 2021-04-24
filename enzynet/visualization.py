@@ -5,6 +5,8 @@
 
 # MIT License
 
+from typing import List, Optional, Text, Tuple
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,15 +14,16 @@ from enzynet import pdb
 from enzynet import volume
 
 
-def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
-                  max_radius=40, noise_treatment=True):
+def visualize_pdb(pdb_id: Text, p: int = 5, v_size: int = 32, num: int = 1,
+                  weight_type: Optional[Text] = None, max_radius: int = 40,
+                  noise_treatment: bool = True) -> None:
     """Plots PDB in a volume and saves it in a file."""
     # Get coordinates.
     pdb_backbone = pdb.PDBBackbone(pdb_id)
     pdb_backbone.get_coords_extended(p=p)
 
-    if weights != None:
-        pdb_backbone.get_weights_extended(p=p, weights=weights)
+    if weight_type is not None:
+        pdb_backbone.get_weights_extended(p=p, weight_type=weight_type)
 
     # Center to 0.
     coords = volume.coords_center_to_zero(pdb_backbone.backbone_coords_ext)
@@ -28,7 +31,7 @@ def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
     # Adjust size.
     coords = volume.adjust_size(coords, v_size, max_radius)
 
-    if weights is None:
+    if weight_type is None:
         # Convert to volume.
         vol = volume.coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
     else:
@@ -36,12 +39,13 @@ def visualize_pdb(pdb_id, p=5, v_size=32, num=1, weights=None,
         vol = volume.weights_to_volume(coords, pdb_backbone.backbone_weights_ext,
                                        v_size, noise_treatment=noise_treatment)
     # Plot.
-    plot_volume(vol, pdb_id, v_size, num, weights=weights)
+    plot_volume(vol, pdb_id, v_size, num, weight_type=weight_type)
 
 
 # 3D plot, sources: http://stackoverflow.com/a/35978146/4124317
 #                   https://dawes.wordpress.com/2014/06/27/publication-ready-3d-figures-from-matplotlib/
-def plot_volume(volume, pdb_id, v_size, num, weights=None):
+def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
+                weight_type: Optional[Text] = None):
     """Plots volume in 3D, interpreting the coordinates as voxels."""
     # Initialization.
     plt.rc('text', usetex=True)
@@ -51,7 +55,7 @@ def plot_volume(volume, pdb_id, v_size, num, weights=None):
     ax.set_aspect('equal')
 
     # Parameters.
-    len_vol = volume.shape[0]
+    len_vol = vol.shape[0]
 
     # Set position of the view.
     ax.view_init(elev=20, azim=135)
@@ -62,10 +66,10 @@ def plot_volume(volume, pdb_id, v_size, num, weights=None):
     ax.set_zticklabels([])
 
     # Plot.
-    if weights is None:
-        plot_matrix(ax, volume)
+    if weight_type is None:
+        plot_matrix(ax, vol)
     else:
-        plot_matrix_of_weights(ax, volume)
+        plot_matrix_of_weights(ax, vol)
 
     # Tick at every unit.
     ax.set_xticks(np.arange(len_vol))
@@ -105,10 +109,13 @@ def plot_volume(volume, pdb_id, v_size, num, weights=None):
 
     # Save.
     plt.savefig('../scripts/volume/' + str(pdb_id) + '_' + str(v_size) + '_' +
-                str(weights) + '_' + str(num) + '.pdf')
+                str(weight_type) + '_' + str(num) + '.pdf')
 
 
-def cuboid_data(pos, size=(1,1,1)):
+def cuboid_data(
+        pos: Tuple[float, float, float],
+        size: Tuple[int, int, int]=(1,1,1)
+) -> Tuple[List[List[float]], List[List[float]], List[List[float]]]:
     """Gets coordinates of cuboid."""
     # Gets the (left, outside, bottom) point.
     o = [a - b / 2 for a, b in zip(pos, size)]
@@ -128,21 +135,24 @@ def cuboid_data(pos, size=(1,1,1)):
     return x, y, z
 
 
-def plot_cube_at(pos=(0,0,0), ax=None):
+def plot_cube_at(pos: Tuple[float, float, float] = (0,0,0),
+                 ax: Optional[plt.gca] = None) -> None:
     """Plots a cube element at position pos."""
     if ax != None:
         X, Y, Z = cuboid_data(pos)
         ax.plot_surface(X, Y, Z, color='g', rstride=1, cstride=1, alpha=1)
 
 
-def plot_cube_weights_at(pos=(0,0,0), ax=None, color='g'):
+def plot_cube_weights_at(pos: Tuple[float, float, float] = (0,0,0),
+                         ax: Optional[plt.gca] = None,
+                         color: Text = 'g') -> None:
     """Plots a cube element at position pos."""
     if ax != None:
         X, Y, Z = cuboid_data(pos)
         ax.plot_surface(X, Y, Z, color=color, rstride=1, cstride=1, alpha=1)
 
 
-def plot_matrix(ax, matrix):
+def plot_matrix(ax: Optional[plt.gca], matrix: np.ndarray) -> None:
     """Plots cubes from a volumic matrix."""
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
@@ -151,7 +161,7 @@ def plot_matrix(ax, matrix):
                     plot_cube_at(pos=(i-0.5,j-0.5,k-0.5), ax=ax)
 
 
-def plot_matrix_of_weights(ax, matrix_of_weights):
+def plot_matrix_of_weights(ax: plt.gca, matrix_of_weights: np.ndarray) -> None:
     """Plots cubes from a volumic matrix."""
     # Initialization.
     min_value = np.amin(matrix_of_weights)
@@ -182,4 +192,4 @@ def plot_matrix_of_weights(ax, matrix_of_weights):
 
 
 if __name__ == '__main__':
-    visualize_pdb('2Q3Z', p=0, v_size=32, weights=None)
+    visualize_pdb('2Q3Z', p=0, v_size=32, weight_type=None)

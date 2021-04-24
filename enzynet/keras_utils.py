@@ -5,6 +5,8 @@
 
 # MIT License
 
+from typing import Dict, List, Text
+
 import os.path
 import itertools
 
@@ -14,6 +16,7 @@ from enzynet import indicators
 from enzynet import real_time
 from enzynet import tools
 from enzynet import volume
+from keras import models
 from keras.callbacks import Callback
 from matplotlib import pyplot as plt
 from tqdm import tqdm
@@ -76,20 +79,33 @@ class Voting(volume.VolumeDataGenerator):
         If True, divides all weights by the weight that is maximum in absolute
         value.
     """
-    def __init__(self, list_enzymes, labels, voting_type='probabilities', augmentation=['None'],
-                 v_size=32, directory_precomputed=precomputed_path,
-                 directory_pdb=PDB_path, shuffle=True, p=5, max_radius=40,
-                 noise_treatment=False, weights=[], scaling_weights=True):
+    def __init__(
+            self,
+            list_enzymes: List[Text],
+            labels: Dict[Text, int],
+            voting_type: Text = 'probabilities',
+            augmentation: List[Text] = ['None'],
+            v_size: int = 32,
+            directory_precomputed: Text = precomputed_path,
+            directory_pdb: Text = PDB_path,
+            shuffle: bool = True,
+            p: int = 5,
+            max_radius: float = 40,
+            noise_treatment: bool = False,
+            weights: List = [],
+            scaling_weights: bool = True
+    ) -> None:
         """Initialization."""
-        volume.VolumeDataGenerator.__init__(self, list_enzymes, labels, v_size=v_size, flips=(0, 0, 0),
-                                     batch_size=1, directory_precomputed=directory_precomputed,
-                                     directory_pdb=directory_pdb, shuffle=shuffle, p=p,
-                                     max_radius=max_radius, noise_treatment=noise_treatment,
-                                     weights=weights, scaling_weights=scaling_weights)
+        volume.VolumeDataGenerator.__init__(
+            self, list_enzymes, labels, v_size=v_size, flips=(0, 0, 0),
+            batch_size=1, directory_precomputed=directory_precomputed,
+            directory_pdb=directory_pdb, shuffle=shuffle, p=p,
+            max_radius=max_radius, noise_treatment=noise_treatment,
+            weights=weights, scaling_weights=scaling_weights)
         self.voting_type = voting_type
         self.augmentation = augmentation
 
-    def predict(self, model):
+    def predict(self, model: models.Sequential) -> None:
         """Predicts classes of testing enzymes."""
         # Initialization.
         self.y_pred = np.empty((len(self.list_enzymes), len(self.augmentation)), dtype=int)
@@ -103,7 +119,7 @@ class Voting(volume.VolumeDataGenerator):
                 self.y_pred[i,j] = \
                     self.__vote(model, enzyme, augmentation)
 
-    def get_assessment(self):
+    def get_assessment(self) -> None:
         """Compute several performance indicators."""
         for j, augmentation in enumerate(self.augmentation):
             print('Augmentation: {0}'.format(augmentation))
@@ -111,7 +127,8 @@ class Voting(volume.VolumeDataGenerator):
             for method in methods:
                 getattr(ind, method)()
 
-    def __vote(self, model, enzyme, augmentation):
+    def __vote(self, model: models.Sequential, enzyme: Text,
+               augmentation: Text) -> int:
         # Initialization.
         probability = np.zeros((1, 6))
 
@@ -182,7 +199,7 @@ class MetricsHistory(Callback):
     saving_path : string (optional, default is 'test.csv')
         Full path to output csv file.
     """
-    def __init__(self, saving_path='test.csv'):
+    def __init__(self, saving_path: Text = 'test.csv') -> None:
         # Initialization.
         self.display = real_time.RealTimePlot(max_entries=200)
         self.saving_path = saving_path
@@ -192,7 +209,7 @@ class MetricsHistory(Callback):
         self.accs = []
         self.val_accs = []
 
-    def on_epoch_end(self, epoch, logs={}):
+    def on_epoch_end(self, epoch: int, logs: Dict[Text, float] = {}) -> None:
         # Store.
         self.epochs += [epoch]
         self.losses += [logs.get('loss')]
@@ -205,7 +222,6 @@ class MetricsHistory(Callback):
                          y_tr=logs.get('acc'),
                          y_val=logs.get('val_acc'))
         plt.pause(0.001)
-
 
         # Save to file.
         dictionary = {'epochs': self.epochs,

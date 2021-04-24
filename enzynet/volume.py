@@ -5,6 +5,8 @@
 
 # MIT License
 
+from typing import Dict, List, Optional, Sequence, Text, Tuple, Union
+
 import keras
 import os.path
 
@@ -85,10 +87,22 @@ class VolumeDataGenerator(keras.utils.Sequence):
                                         max_radius=40, noise_treatment=False,
                                         weights=[], scaling_weights=True)
     """
-    def __init__(self, list_enzymes, labels, v_size=32, flips=(0.2, 0.2, 0.2), batch_size=32,
-                 directory_precomputed=precomputed_path, directory_pdb=PDB_path,
-                 shuffle=True, p=5, max_radius=40, noise_treatment=False,
-                 weights=[], scaling_weights=True):
+    def __init__(
+            self,
+            list_enzymes: List[Text],
+            labels: Dict[Text, int],
+            v_size: int = 32,
+            flips: Tuple[float, float, float] = (0.2, 0.2, 0.2),
+            batch_size: int = 32,
+            directory_precomputed: Text = precomputed_path,
+            directory_pdb: Text = PDB_path,
+            shuffle: bool = True,
+            p: int = 5,
+            max_radius: float = 40,
+            noise_treatment: bool = False,
+            weights: List[Text] = [],
+            scaling_weights: bool = True
+    ) -> None:
         """Initialization."""
         self.batch_size = batch_size
         self.directory_precomputed = directory_precomputed
@@ -106,7 +120,7 @@ class VolumeDataGenerator(keras.utils.Sequence):
         self.weights = weights
         self.on_epoch_end()
 
-    def check_precomputed(self):
+    def check_precomputed(self) -> None:
         """Checks if all coordinates and weights have been precomputed, and precomputes them otherwise."""
         # Initialization.
         list_enzymes = list(self.labels)
@@ -129,17 +143,17 @@ class VolumeDataGenerator(keras.utils.Sequence):
                 counter += 1
         print("Had to compute files of {0} enzymes.".format(counter))
 
-    def on_epoch_end(self):
+    def on_epoch_end(self) -> None:
         """Updates indexes after each epoch."""
         self.indexes = np.arange(len(self.list_enzymes))
         if self.shuffle is True:
             np.random.shuffle(self.indexes)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Denotes the number of batches per epoch."""
         return int(np.floor(len(self.list_enzymes) / self.batch_size))
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
         """Generate one batch of data."""
         # Generate indexes of the batch.
         indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
@@ -152,7 +166,10 @@ class VolumeDataGenerator(keras.utils.Sequence):
 
         return X, y
 
-    def __data_augmentation(self, list_enzymes_temp):
+    def __data_augmentation(
+            self,
+            list_enzymes_temp: List[Text]
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Returns augmented data with batch_size enzymes."""  # X : (n_samples, v_size, v_size, v_size, n_channels).
         # Initialization.
         X = np.empty((self.batch_size,  # n_enzymes.
@@ -199,12 +216,14 @@ class VolumeDataGenerator(keras.utils.Sequence):
         return X, sparsify(y)
 
 
-def coords_to_volume(coords, v_size, noise_treatment=False):
+def coords_to_volume(coords: np.ndarray, v_size: int,
+                     noise_treatment: bool = False) -> np.ndarray:
     """Converts coordinates to binary voxels."""  # Input is centered on [0,0,0].
     return weights_to_volume(coords=coords, weights=1, v_size=v_size, noise_treatment=noise_treatment)
 
 
-def weights_to_volume(coords, weights, v_size, noise_treatment=False):
+def weights_to_volume(coords: np.ndarray, weights: Union[Sequence, int],
+                      v_size: int, noise_treatment: bool = False) -> np.ndarray:
     """Converts coordinates to voxels with weights."""  # Input is centered on [0,0,0].
     # Initialization.
     volume = np.zeros((v_size, v_size, v_size))
@@ -228,24 +247,28 @@ def weights_to_volume(coords, weights, v_size, noise_treatment=False):
     return volume
 
 
-def coords_center_to_zero(coords):
+def coords_center_to_zero(coords: np.ndarray) -> np.ndarray:
     """Centering coordinates on [0,0,0]."""
     barycenter = get_barycenter(coords)
     return coords - np.full((coords.shape[0], 3), barycenter)
 
 
-def adjust_size(coords, v_size=32, max_radius=40):
+def adjust_size(coords: np.ndarray, v_size: int = 32,
+                max_radius: float = 40) -> np.ndarray:
     return np.multiply((v_size/2-1)/max_radius, coords)
 
 
-def sparsify(y):
+def sparsify(y: np.ndarray) -> np.ndarray:
     """Returns labels in binary NumPy array."""
     n_classes = 6
     return np.array([[1 if y[i] == j+1 else 0 for j in range(n_classes)]
                       for i in range(y.shape[0])])
 
 
-def flip_around_axis(coords, axis=(0.2, 0.2, 0.2)):
+def flip_around_axis(
+        coords: np.ndarray,
+        axis: Tuple[float, float, float] = (0.2, 0.2, 0.2)
+) -> np.ndarray:
     """Flips coordinates randomly w.r.t. each axis with its associated probability."""
     for col in range(3):
         if np.random.binomial(1, axis[col]):
@@ -253,12 +276,12 @@ def flip_around_axis(coords, axis=(0.2, 0.2, 0.2)):
     return coords
 
 
-def get_barycenter(coords):
+def get_barycenter(coords: np.ndarray) -> np.ndarray:
     """Gets barycenter point of a Nx3 matrix."""
     return np.array([np.mean(coords, axis=0)])
 
 
-def remove_noise(coords, volume):
+def remove_noise(coords: np.ndarray, volume: np.ndarray) -> np.ndarray:
     """Removes isolated atoms from voxel structure."""
     # Parameters.
     v_size = volume.shape[0]
@@ -276,7 +299,9 @@ def remove_noise(coords, volume):
     return volume
 
 
-def precomputed_name(pdb_id, path, type_file, desired_p, weights_name=None, scaling=True):
+def precomputed_name(pdb_id: Text, path: Text, type_file: Text, desired_p: int,
+                     weights_name: Optional[Text] = None,
+                     scaling: bool = True) -> Text:
     """Returns path in string of precomputed file."""
     if type_file == 'coords':
         return os.path.join(path, pdb_id.lower() + '_coords_p' + str(desired_p) + '.npy')
@@ -284,8 +309,9 @@ def precomputed_name(pdb_id, path, type_file, desired_p, weights_name=None, scal
         return os.path.join(path, pdb_id.lower() + '_' + weights_name + '_p' + str(desired_p) + '_scaling' + str(scaling) + '.npy')
 
 
-def save_coords_weights(pdb_id, list_weights, desired_p, scaling_weights,
-                        source_path, dest_path):
+def save_coords_weights(pdb_id: Text, list_weights: List[Text], desired_p: int,
+                        scaling_weights: bool, source_path: Text,
+                        dest_path: Text) -> None:
     """Computes coordinates and weights and saves them into .npy files."""
     # Initialize local PDB.
     local_PDB = pdb.PDBBackbone(pdb_id=pdb_id, path=source_path)
@@ -297,18 +323,19 @@ def save_coords_weights(pdb_id, list_weights, desired_p, scaling_weights,
 
     # Weights.
     for weights_name in list_weights:
-        local_PDB.get_weights_extended(desired_p, weights=weights_name,
+        local_PDB.get_weights_extended(desired_p, weight_type=weights_name,
                                        scaling=scaling_weights)  # Compute.
         weights = local_PDB.backbone_weights_ext  # Store.
         np.save(precomputed_name(pdb_id, dest_path, 'weights', desired_p, weights_name, scaling_weights),
                 weights)  # Save.
 
 
-def load_coords(pdb_id, desired_p, source_path):
+def load_coords(pdb_id: Text, desired_p: int, source_path: Text) -> np.ndarray:
     """Loads precomputed coordinates."""
     return np.load(precomputed_name(pdb_id, source_path, 'coords', desired_p))
 
 
-def load_weights(pdb_id, weights_name, desired_p, scaling, source_path):
+def load_weights(pdb_id: Text, weights_name: Text, desired_p: int,
+                 scaling: bool, source_path: Text) -> np.ndarray:
     """Loads precomputed weights."""
     return np.load(precomputed_name(pdb_id, source_path, 'weights', desired_p, weights_name, scaling))

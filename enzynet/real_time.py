@@ -4,6 +4,8 @@
 #          Shervine Amidi <firstname@stanford.edu>
 # MIT License
 
+from typing import Optional, Text
+
 import time
 
 from collections import deque
@@ -14,7 +16,8 @@ start = time.time()
 
 # Adapted from https://gist.github.com/Uberi/283a13b8a71a46fb4dc8.
 class RealTimePlot(object):
-    def __init__(self, max_entries=200, x_label=r'Epochs', y_label=r'Accuracy'):
+    def __init__(self, max_entries: int = 200, x_label: Text = r'Epochs',
+                 y_label: Text = r'Accuracy') -> None:
         # TeX friendly.
         plt.rc('text', usetex=True)
         plt.rc('font', family='serif')
@@ -41,7 +44,7 @@ class RealTimePlot(object):
         self.axes.set_xlabel(x_label)
         self.axes.set_ylabel(y_label)
 
-    def add(self, x, y_tr, y_val=None):
+    def add(self, x: float, y_tr: float, y_val: Optional[float] = None) -> None:
         # Add new point.
         self.axis_x.append(x)
         self.axis_y_tr.append(y_tr)
@@ -54,14 +57,6 @@ class RealTimePlot(object):
         # Change axis limits.
         self.axes.set_xlim(self.axis_x[0], self.axis_x[-1] + 1e-15)
         self.axes.relim(); self.axes.autoscale_view()  # Rescale the y-axis.
-
-    def animate(self, figure, callback, interval=50):
-        import matplotlib.animation as animation
-        def wrapper(frame_index):
-            self.add(*callback(frame_index))
-            self.axes.relim(); self.axes.autoscale_view()  # Rescale the y-axis.
-            return self.lineplot
-        animation.FuncAnimation(figure, wrapper, interval=interval)
 
 
 if __name__ == "__main__":
