@@ -17,6 +17,7 @@ from Bio.PDB import PDBExceptions
 from Bio.PDB import PDBParser
 from Bio.PDB import Polypeptide
 from enzynet import tools
+from enzynet import weights
 
 warnings.filterwarnings("ignore", category=PDBExceptions.PDBConstructionWarning)
 
@@ -94,12 +95,18 @@ class PDBBackbone(object):
         backbone_residues = []
 
         # Select weights.
-        weights = tools.read_dict(os.path.join(datasets_path, weight_type + '.csv'))
-        weights = dict([key, float(value)] for key, value in weights.items())  # Convert values to float.
+        if weight_type == 'charge':
+            aa_to_weight = weights.CHARGE
+        elif weight_type == 'hydropathy':
+            aa_to_weight = weights.HYDROPATHY
+        elif weight_type == 'isoelectric':
+            aa_to_weight = weights.ISOELECTRIC
+        else:
+            raise ValueError(f"{weight_type} mapping is not supported")
 
         # Scaling.
         if scaling is True:
-            weights = tools.scale_dict(weights)
+            aa_to_weight = tools.scale_dict(aa_to_weight)
 
         # Computations.
         for model in self.structure:
@@ -107,7 +114,7 @@ class PDBBackbone(object):
                 for residue in chain:
                     if Polypeptide.is_aa(residue, standard=True):  # Check if standard amino acid.
                         local_residue = residue.get_resname()
-                        local_weight = weights[local_residue]
+                        local_weight = aa_to_weight[local_residue]
                         for atom in residue:
                             if atom.get_name() in backbone_ids:
                                 backbone_weights = backbone_weights + [local_weight]

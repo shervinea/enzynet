@@ -72,8 +72,8 @@ class Voting(volume.VolumeDataGenerator):
         If True, voxels with no direct neighbor will be deleted.
 
     weights : list of strings (optional, default is [])
-        List of weights (among the values ['hydropathy', 'charge']) to consider
-        as additional channels.
+        List of weights (among the values ['charge', 'hydropathy',
+        'isoelectric']) to consider as additional channels.
 
     scaling_weights : boolean (optional, default is True)
         If True, divides all weights by the weight that is maximum in absolute
