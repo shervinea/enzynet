@@ -1,5 +1,19 @@
+# Mac.
 **/.DS_Store
+
+# Notebooks.
 **/.ipynb_checkpoints
+
+# PDB caching.
+*.pdb
+
+# Code execution.
 **/__pycache__
 **/.pyc
+.idea/**
+
+# Package.
 *.egg-info
+
+# Virtual environment.
+venv/**
