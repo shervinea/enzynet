@@ -21,11 +21,11 @@ from keras.callbacks import Callback
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-current_directory = os.path.dirname(os.path.abspath(__file__))
-precomputed_path = os.path.join(current_directory, '../files/precomputed/')
-PDB_path = os.path.join(current_directory, '../files/PDB/')
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+PRECOMPUTED_PATH = os.path.join(CURRENT_DIRECTORY, '../files/precomputed/')
+PDB_PATH = os.path.join(CURRENT_DIRECTORY, '../files/PDB/')
 
-methods = ['confusion_matrix', 'accuracy',
+METHODS = ['confusion_matrix', 'accuracy',
            'precision_per_class', 'recall_per_class', 'f1_per_class',
            'macro_precision', 'macro_recall', 'macro_f1']
 
@@ -86,8 +86,8 @@ class Voting(volume.VolumeDataGenerator):
             voting_type: Text = 'probabilities',
             augmentation: List[Text] = ['None'],
             v_size: int = 32,
-            directory_precomputed: Text = precomputed_path,
-            directory_pdb: Text = PDB_path,
+            directory_precomputed: Text = PRECOMPUTED_PATH,
+            directory_pdb: Text = PDB_PATH,
             shuffle: bool = True,
             p: int = 5,
             max_radius: float = 40,
@@ -124,7 +124,7 @@ class Voting(volume.VolumeDataGenerator):
         for j, augmentation in enumerate(self.augmentation):
             print('Augmentation: {0}'.format(augmentation))
             ind = indicators.Indicators(self.y_true, self.y_pred[:,j])
-            for method in methods:
+            for method in METHODS:
                 getattr(ind, method)()
 
     def __vote(self, model: models.Sequential, enzyme: Text,

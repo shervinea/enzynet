@@ -21,11 +21,11 @@ from enzynet import weights
 
 warnings.filterwarnings("ignore", category=PDBExceptions.PDBConstructionWarning)
 
-backbone_ids = ['C', 'N', 'CA']
+BACKBONE_IDS = ['C', 'N', 'CA']
 
-current_directory = os.path.dirname(os.path.abspath(__file__))
-PDB_path = os.path.join(current_directory, '../files/PDB/')
-datasets_path = os.path.join(current_directory, '../datasets/')
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+PDB_PATH = os.path.join(CURRENT_DIRECTORY, '../files/PDB/')
+DATASETS_PATHS = os.path.join(CURRENT_DIRECTORY, '../datasets/')
 
 
 class PDBBackbone(object):
@@ -40,7 +40,7 @@ class PDBBackbone(object):
         Path where the PDB file is located, or where the PDB file should be
         downloaded.
     """
-    def __init__(self, pdb_id: Text, path: Text = PDB_path) -> None:
+    def __init__(self, pdb_id: Text, path: Text = PDB_PATH) -> None:
         """Initialization."""
         self.pdb_id = pdb_id.upper()
         fullfilename = os.path.join(path, pdb_id.lower() + '.pdb')
@@ -64,7 +64,7 @@ class PDBBackbone(object):
                 for residue in chain:
                     if Polypeptide.is_aa(residue, standard=True):  # Check if amino acid.
                         for atom in residue:
-                            if atom.get_name() in backbone_ids:
+                            if atom.get_name() in BACKBONE_IDS:
                                 backbone_coords = backbone_coords + [atom.get_coord().tolist()]
                                 backbone_atoms = backbone_atoms + [atom.get_name()]
 
@@ -76,7 +76,7 @@ class PDBBackbone(object):
         """Adds the coordinates from interpolation betweens atoms of the backbone."""
         # Initialization.
         self.get_coords()
-        C_coords = self.__get_coords_specific_atom(backbone_ids)
+        C_coords = self.__get_coords_specific_atom(BACKBONE_IDS)
         new_coords = np.zeros((p*(C_coords.shape[0]-1), C_coords.shape[1]))
 
         # Computations.
@@ -116,7 +116,7 @@ class PDBBackbone(object):
                         local_residue = residue.get_resname()
                         local_weight = aa_to_weight[local_residue]
                         for atom in residue:
-                            if atom.get_name() in backbone_ids:
+                            if atom.get_name() in BACKBONE_IDS:
                                 backbone_weights = backbone_weights + [local_weight]
                                 backbone_residues = backbone_residues + [local_residue]
 
@@ -129,7 +129,7 @@ class PDBBackbone(object):
         """Adds the weights from interpolation between atoms of the backbone."""
         # Initialization.
         self.get_weights(weight_type=weight_type, scaling=scaling)
-        C_weights = self.__get_weights_specific_atom(backbone_ids)
+        C_weights = self.__get_weights_specific_atom(BACKBONE_IDS)
         new_weights = np.zeros((p*(len(C_weights)-1)))
 
         # Computations.

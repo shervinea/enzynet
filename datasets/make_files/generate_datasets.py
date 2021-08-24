@@ -15,11 +15,11 @@ from tqdm import tqdm
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017.
 
 # Parameters.
-n_classes = 6
+N_CLASSES = 6
 
 ##------------------------- Data preprocessing -------------------------------##
 # Computations.
-for i in range(1, n_classes+1):
+for i in range(1, N_CLASSES+1):
     # Initialization.
     errors = []  # List of indexes with error.
     enzymes = pd.read_table('raw/' + str(i) + '.txt', header=None)  # Load PDB IDs.
@@ -48,7 +48,7 @@ for i in range(1, n_classes+1):
 labels = {}
 
 # Computations.
-for i in range(1, n_classes+1):
+for i in range(1, N_CLASSES+1):
     # Load PDB IDs for each class.
     enzymes = pd.read_table(str(i) + '.txt', header=None)
     enzymes = enzymes[0].tolist()
@@ -140,22 +140,22 @@ pdb_ids = list(labels_temp)
 partition = {}
 
 # Parameters.
-x = 0.8  # Split all 80:20 in train/test and train 80:20 in train/validation.
+X = 0.8  # Split all 80:20 in train/test and train 80:20 in train/validation.
 
 # Random shuffling.
 indexes = np.arange(len(pdb_ids))
 np.random.shuffle(indexes)
 
 # Train.
-train_ids = [pdb_ids[i] for i in indexes[0:int(x*x*len(pdb_ids))]]
+train_ids = [pdb_ids[i] for i in indexes[0:int(X*X*len(pdb_ids))]]
 partition['train'] = train_ids
 
 # Validation.
-val_ids = [pdb_ids[i] for i in indexes[int(x*x*len(pdb_ids)):int(x*len(pdb_ids))]]
+val_ids = [pdb_ids[i] for i in indexes[int(X*X*len(pdb_ids)):int(X*len(pdb_ids))]]
 partition['validation'] = val_ids
 
 # Test.
-test_ids = [pdb_ids[i] for i in indexes[int(x*len(pdb_ids)):]]
+test_ids = [pdb_ids[i] for i in indexes[int(X*len(pdb_ids)):]]
 partition['test'] = test_ids
 
 # # Save results.
@@ -167,27 +167,27 @@ partition = tools.read_dict('../partition_single.csv')
 partition_red = {}
 
 # Parameters.
-factor_reduction = 0.1
+FACTOR_REDUCTION = 0.1
 
 # Train.
 exec("partition['train'] = " + partition['train'])
 indexes = np.arange(len(partition['train']))
 np.random.shuffle(indexes)
-train_ids = [partition['train'][i] for i in indexes[0:int(factor_reduction*len(indexes))]]
+train_ids = [partition['train'][i] for i in indexes[0:int(FACTOR_REDUCTION*len(indexes))]]
 partition_red['train'] = train_ids
 
 # Validation.
 exec("partition['validation'] = " + partition['validation'])
 indexes = np.arange(len(partition['validation']))
 np.random.shuffle(indexes)
-val_ids = [partition['validation'][i] for i in indexes[0:int(factor_reduction*len(indexes))]]
+val_ids = [partition['validation'][i] for i in indexes[0:int(FACTOR_REDUCTION*len(indexes))]]
 partition_red['validation'] = val_ids
 
 # Test.
 exec("partition['test'] = " + partition['test'])
 indexes = np.arange(len(partition['test']))
 np.random.shuffle(indexes)
-test_ids = [partition['test'][i] for i in indexes[0:int(factor_reduction*len(indexes))]]
+test_ids = [partition['test'][i] for i in indexes[0:int(FACTOR_REDUCTION*len(indexes))]]
 partition_red['test'] = test_ids
 
 # # Save results.

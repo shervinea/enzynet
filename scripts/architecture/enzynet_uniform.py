@@ -21,46 +21,46 @@ from keras import models
 from keras import optimizers
 from keras import regularizers
 
-mode_run = 'test'
-mode_dataset = 'full'
-mode_weights = 'unbalanced'
+MODE_RUN = 'test'
+MODE_DATASET = 'full'
+MODE_WEIGHTS = 'unbalanced'
 
 ##----------------------------- Parameters -----------------------------------##
 # PDB.
-weights = []
-n_classes = 6
-n_channels = 1 + len(weights)
-scaling_weights = True
+WEIGHTS = []
+N_CLASSES = 6
+N_CHANNELS = 1 + len(WEIGHTS)
+SCALING_WEIGHTS = True
 
 # Volume.
-p = 0
-v_size = 32
-flips = (0.2, 0.2, 0.2)
-max_radius = 40
-shuffle = True
-noise_treatment = False
+P = 0
+V_SIZE = 32
+FLIPS = (0.2, 0.2, 0.2)
+MAX_RADIUS = 40
+SHUFFLE = True
+NOISE_TREATMENT = False
 
 # Model.
-batch_size = 32
-max_epochs = 200
-period_checkpoint = 50
+BATCH_SIZE = 32
+MAX_EPOCHS = 200
+PERIOD_CHECKPOINT = 50
 
 # Testing.
-voting_type = 'probabilities'
-augmentation = ['None', 'flips', 'weighted_flips']
+VOTING_TYPE = 'probabilities'
+AUGMENTATION = ['None', 'flips', 'weighted_flips']
 
 # Miscellaneous.
-current_file_name = os.path.basename(__file__)[:-3]
-stddev_conv3d = np.sqrt(2.0/(n_channels))
+CURRENT_FILE_NAME = os.path.basename(__file__)[:-3]
+STDDEV_CONV3D = np.sqrt(2.0/N_CHANNELS)
 
 ##------------------------------ Dataset -------------------------------------##
 # Load dictionary of labels.
-dictionary = tools.read_dict('../../datasets/dataset_single.csv')
+DICTIONARY = tools.read_dict('../../datasets/dataset_single.csv')
 
 # Load partitions.
-if mode_dataset == 'full':
+if MODE_DATASET == 'full':
     partition = tools.read_dict('../../datasets/partition_single.csv')
-elif mode_dataset == 'reduced':
+elif MODE_DATASET == 'reduced':
     partition = tools.read_dict('../../datasets/partition_single_red.csv')
 exec("partition['train'] = " + partition['train'])
 exec("partition['validation'] = " + partition['validation'])
@@ -71,36 +71,36 @@ partition['train'] = partition['train'] + partition['validation']
 partition['validation'] = partition['test']
 
 # Get class weights.
-class_weights = tools.get_class_weights(dictionary, partition['train'],
-                                  mode=mode_weights)
+class_weights = tools.get_class_weights(DICTIONARY, partition['train'],
+                                        mode=MODE_WEIGHTS)
 
 # Training generator.
 training_generator = volume.VolumeDataGenerator(
     list_enzymes=partition['train'],
-    labels=dictionary,
-    v_size=v_size,
-    flips=flips,
-    batch_size=batch_size,
-    shuffle=shuffle,
-    p=p,
-    max_radius=max_radius,
-    noise_treatment=noise_treatment,
-    weights=weights,
-    scaling_weights=scaling_weights)
+    labels=DICTIONARY,
+    v_size=V_SIZE,
+    flips=FLIPS,
+    batch_size=BATCH_SIZE,
+    shuffle=SHUFFLE,
+    p=P,
+    max_radius=MAX_RADIUS,
+    noise_treatment=NOISE_TREATMENT,
+    weights=WEIGHTS,
+    scaling_weights=SCALING_WEIGHTS)
 
 # Validation generator.
 validation_generator = volume.VolumeDataGenerator(
     list_enzymes=partition['validation'],
-    labels=dictionary,
-    v_size=v_size,
+    labels=DICTIONARY,
+    v_size=V_SIZE,
     flips=(0, 0, 0),  # No flip.
-    batch_size=batch_size,
+    batch_size=BATCH_SIZE,
     shuffle=False,  # Validate with fixed set.
-    p=p,
-    max_radius=max_radius,
-    noise_treatment=noise_treatment,
-    weights=weights,
-    scaling_weights=scaling_weights)
+    p=P,
+    max_radius=MAX_RADIUS,
+    noise_treatment=NOISE_TREATMENT,
+    weights=WEIGHTS,
+    scaling_weights=SCALING_WEIGHTS)
 
 # Check if data has been precomputed.
 training_generator.check_precomputed()
@@ -109,15 +109,15 @@ training_generator.check_precomputed()
 # Voting object.
 predictions = keras_utils.Voting(
     list_enzymes=partition['test'],
-    labels=dictionary,
-    voting_type=voting_type,
-    v_size=v_size,
-    augmentation=augmentation,
-    p=p,
-    max_radius=max_radius,
-    noise_treatment=noise_treatment,
-    weights=weights,
-    scaling_weights=scaling_weights)
+    labels=DICTIONARY,
+    voting_type=VOTING_TYPE,
+    v_size=V_SIZE,
+    augmentation=AUGMENTATION,
+    p=P,
+    max_radius=MAX_RADIUS,
+    noise_treatment=NOISE_TREATMENT,
+    weights=WEIGHTS,
+    scaling_weights=SCALING_WEIGHTS)
 
 ##------------------------------ Model ---------------------------------------##
 # Create.
@@ -130,11 +130,11 @@ model.add(
         kernel_size=9,
         strides=2,
         padding='valid',
-        kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=stddev_conv3d * 9**(-3/2)),
+        kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=STDDEV_CONV3D * 9 ** (-3 / 2)),
         bias_initializer='zeros',
         kernel_regularizer=regularizers.l2(0.001),
         bias_regularizer=None,
-        input_shape=(v_size, v_size, v_size, n_channels)))
+        input_shape=(V_SIZE, V_SIZE, V_SIZE, N_CHANNELS)))
 
 model.add(advanced_activations.LeakyReLU(alpha=0.1))
 
@@ -146,7 +146,7 @@ model.add(
         kernel_size=5,
         strides=1,
         padding='valid',
-        kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=stddev_conv3d * 5**(-3/2)),
+        kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=STDDEV_CONV3D * 5 ** (-3 / 2)),
         bias_initializer='zeros',
         kernel_regularizer=regularizers.l2(0.001),
         bias_regularizer=None))
@@ -171,7 +171,7 @@ model.add(layers.Dropout(rate=0.4))
 
 model.add(
     layers.Dense(
-        units=n_classes,
+        units=N_CLASSES,
         kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=0.01),
         bias_initializer='zeros',
         kernel_regularizer=regularizers.l2(0.001),
@@ -180,15 +180,15 @@ model.add(
 model.add(layers.Activation('softmax'))
 
 # Track accuracy and loss in real-time.
-history = keras_utils.MetricsHistory(saving_path=current_file_name + '.csv')
+history = keras_utils.MetricsHistory(saving_path=CURRENT_FILE_NAME + '.csv')
 
 # Checkpoints.
 checkpoints = callbacks.ModelCheckpoint(
-    'checkpoints/' + current_file_name + '_{epoch:02d}' + '.hd5f',
+    'checkpoints/' + CURRENT_FILE_NAME + '_{epoch:02d}' + '.hd5f',
     save_weights_only=True,
-    period=period_checkpoint)
+    period=PERIOD_CHECKPOINT)
 
-if mode_run == 'train':
+if MODE_RUN == 'train':
     # Compile.
     model.compile(optimizer=optimizers.Adam(lr=0.001, decay=0.00016667),
                   loss='categorical_crossentropy',
@@ -196,7 +196,7 @@ if mode_run == 'train':
 
     # Train.
     model.fit_generator(generator=training_generator,
-                        epochs=max_epochs,
+                        epochs=MAX_EPOCHS,
                         verbose=1,
                         validation_data=validation_generator,
                         callbacks=[history, checkpoints],
@@ -205,10 +205,10 @@ if mode_run == 'train':
                         workers=8,
                         max_queue_size=30)
 
-if mode_run == 'test':
+if MODE_RUN == 'test':
     # Load weights.
     weights_path = \
-        'checkpoints/' + current_file_name + '_{0:02d}'.format(max_epochs) + '.hd5f'
+        'checkpoints/' + CURRENT_FILE_NAME + '_{0:02d}'.format(MAX_EPOCHS) + '.hd5f'
     model.load_weights(weights_path)
 
 # Predict.
