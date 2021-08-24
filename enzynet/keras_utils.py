@@ -123,7 +123,7 @@ class Voting(volume.VolumeDataGenerator):
         """Compute several performance indicators."""
         for j, augmentation in enumerate(self.augmentation):
             print('Augmentation: {0}'.format(augmentation))
-            ind = indicators.Indicators(self.y_true, self.y_pred[:,j])
+            ind = indicators.Indicators(self.y_true, self.y_pred[:, j])
             for method in METHODS:
                 getattr(ind, method)()
 

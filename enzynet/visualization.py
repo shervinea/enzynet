@@ -143,7 +143,7 @@ def plot_cube_at(pos: Tuple[float, float, float] = (0,0,0),
         ax.plot_surface(X, Y, Z, color='g', rstride=1, cstride=1, alpha=1)
 
 
-def plot_cube_weights_at(pos: Tuple[float, float, float] = (0,0,0),
+def plot_cube_weights_at(pos: Tuple[float, float, float] = (0, 0, 0),
                          ax: Optional[plt.gca] = None,
                          color: Text = 'g') -> None:
     """Plots a cube element at position pos."""
@@ -157,8 +157,8 @@ def plot_matrix(ax: Optional[plt.gca], matrix: np.ndarray) -> None:
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
             for k in range(matrix.shape[2]):
-                if matrix[i,j,k] == 1:
-                    plot_cube_at(pos=(i-0.5,j-0.5,k-0.5), ax=ax)
+                if matrix[i, j, k] == 1:
+                    plot_cube_at(pos=(i-0.5, j-0.5, k-0.5), ax=ax)
 
 
 def plot_matrix_of_weights(ax: plt.gca, matrix_of_weights: np.ndarray) -> None:
@@ -182,12 +182,12 @@ def plot_matrix_of_weights(ax: plt.gca, matrix_of_weights: np.ndarray) -> None:
             for k in range(matrix_of_weights.shape[2]):
                 if matrix_of_weights[i,j,k] != 0:
                     # Translate to [0,100].
-                    normalized_weight = (matrix_of_weights[i,j,k] - min_value)/ \
+                    normalized_weight = (matrix_of_weights[i, j, k] - min_value)/ \
                                         (max_value - min_value)
                     normalized_weight = int(100*normalized_weight)
 
                     # Plot cube with color.
-                    plot_cube_weights_at(pos=(i-0.5,j-0.5,k-0.5), ax=ax,
+                    plot_cube_weights_at(pos=(i-0.5, j-0.5, k-0.5), ax=ax,
                                          color=cgen[normalized_weight])
 
 

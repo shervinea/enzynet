@@ -23,7 +23,7 @@ for i in range(1, N_CLASSES+1):
     # Initialization.
     errors = []  # List of indexes with error.
     enzymes = pd.read_table('raw/' + str(i) + '.txt', header=None)  # Load PDB IDs.
-    list_enzymes = enzymes.loc[:,0].tolist()
+    list_enzymes = enzymes.loc[:, 0].tolist()
 
     # Look for errors.
     for k, enzyme in enumerate(tqdm(list_enzymes)):

@@ -15,7 +15,7 @@ df = df[0]+', '
 df = df.tolist()
 
 # Save to text file with one PDB ID per line.
-file = open('../download_pdb.txt','w')
+file = open('../download_pdb.txt', 'w')
 for i in range(len(df)):
     file.write(df[i])
 file.close()

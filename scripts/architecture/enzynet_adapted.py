@@ -153,7 +153,7 @@ model.add(
 
 model.add(advanced_activations.LeakyReLU(alpha=0.1))
 
-model.add(layers.MaxPooling3D(pool_size=(2,2,2)))
+model.add(layers.MaxPooling3D(pool_size=(2, 2, 2)))
 
 model.add(layers.Dropout(rate=0.3))
 

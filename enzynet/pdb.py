@@ -82,7 +82,7 @@ class PDBBackbone(object):
         # Computations.
         for i in range(1, C_coords.shape[0]):
             for k in range(p, 0, -1):
-                new_coords[p*i-k,:] = ((p-k+1)*C_coords[i-1,:] + k*C_coords[i,:])/(p+1)
+                new_coords[p*i-k, :] = ((p-k+1)*C_coords[i-1, :] + k*C_coords[i, :])/(p+1)
 
         # Store results.
         self.backbone_coords_ext = np.concatenate((self.backbone_coords, new_coords), axis=0)

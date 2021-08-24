@@ -272,7 +272,7 @@ def flip_around_axis(
     """Flips coordinates randomly w.r.t. each axis with its associated probability."""
     for col in range(3):
         if np.random.binomial(1, axis[col]):
-            coords[:,col] = np.negative(coords[:,col])
+            coords[:, col] = np.negative(coords[:, col])
     return coords
 
 
@@ -289,12 +289,12 @@ def remove_noise(coords: np.ndarray, volume: np.ndarray) -> np.ndarray:
     # Computations.
     for i in range(coords.shape[0]):
         if all(valeur < v_size-1 for valeur in coords[i,:]) and \
-           all(valeur > 0 for valeur in coords[i,:]):  # Point inside volume.
-            if np.array_equal(volume[coords[i,0]-1:coords[i,0]+2,coords[i,1]-1:coords[i,1]+2,coords[i,2]-1:coords[i,2]+2],
-                              np.pad(np.array([[[1]]]),1,'constant') * volume[tuple(coords[i])]) is True:  # Isolated point.
-                volume[coords[i,0]-1:coords[i,0]+2,
-                       coords[i,1]-1:coords[i,1]+2,
-                       coords[i,2]-1:coords[i,2]+2] = np.zeros((3,3,3))
+           all(valeur > 0 for valeur in coords[i, :]):  # Point inside volume.
+            if np.array_equal(volume[coords[i, 0]-1:coords[i, 0]+2, coords[i, 1]-1:coords[i, 1]+2, coords[i, 2]-1:coords[i, 2]+2],
+                              np.pad(np.array([[[1]]]), 1, 'constant') * volume[tuple(coords[i])]) is True:  # Isolated point.
+                volume[coords[i, 0]-1:coords[i, 0]+2,
+                       coords[i, 1]-1:coords[i, 1]+2,
+                       coords[i, 2]-1:coords[i, 2]+2] = np.zeros((3, 3, 3))
 
     return volume
 
