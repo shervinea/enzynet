@@ -7,15 +7,13 @@
 
 import pandas as pd
 
-# Read csv files.
-df = pd.read_csv('../dataset_all.csv', header=None)
 
-# Only keep PDB IDs.
-df = df[0]+', '
-df = df.tolist()
+def create_download_file() -> None:
+    """Creates the RCSB download file containing all relevant PDB IDs."""
+    df = pd.read_csv('../dataset_all.csv', header=None)
+    with open('../download_pdb.txt', 'w') as file:
+        file.write(", ".join(df[0].tolist()))
 
-# Save to text file with one PDB ID per line.
-file = open('../download_pdb.txt', 'w')
-for i in range(len(df)):
-    file.write(df[i])
-file.close()
+
+if __name__ == "__main__":
+    create_download_file()
