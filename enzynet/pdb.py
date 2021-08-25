@@ -50,7 +50,7 @@ class PDBBackbone(object):
             urllib.request.urlretrieve('http://files.rcsb.org/download/' +
                                         pdb_id.upper() + '.pdb',
                                         fullfilename)
-        self.structure = PDBParser.PDBParser().get_structure(pdb_id.upper(), fullfilename)
+        self.structure = PDBParser().get_structure(pdb_id.upper(), fullfilename)
 
     def get_coords(self) -> None:
         """Gets coordinates of backbone."""
