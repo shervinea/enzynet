@@ -119,7 +119,7 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
 def cuboid_data(
         pos: Tuple[float, float, float],
         size: Tuple[int, int, int]=(1,1,1)
-) -> Tuple[List[List[float]], List[List[float]], List[List[float]]]:
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Gets coordinates of cuboid."""
     # Gets the (left, outside, bottom) point.
     o = [a - b / 2 for a, b in zip(pos, size)]
@@ -136,7 +136,7 @@ def cuboid_data(
          [o[2], o[2], o[2] + h, o[2] + h, o[2]],
          [o[2], o[2], o[2] + h, o[2] + h, o[2]]]
 
-    return x, y, z
+    return np.array(x), np.array(y), np.array(z)
 
 
 def plot_cube_at(pos: Tuple[float, float, float] = (0,0,0),
