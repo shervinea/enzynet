@@ -8,6 +8,7 @@
 from typing import Optional, Text, Tuple
 
 import numpy as np
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 
 from enzynet import pdb
@@ -142,9 +143,11 @@ def cuboid_data(
 def plot_cube_at(pos: Tuple[float, float, float] = (0,0,0),
                  ax: Optional[plt.gca] = None) -> None:
     """Plots a cube element at position pos."""
+    lightsource = mcolors.LightSource(azdeg=135, altdeg=0)
     if ax != None:
         X, Y, Z = cuboid_data(pos)
-        ax.plot_surface(X, Y, Z, color='g', rstride=1, cstride=1, alpha=1)
+        ax.plot_surface(X, Y, Z, color='g', rstride=1, cstride=1, alpha=1,
+                        lightsource=lightsource)
 
 
 def plot_cube_weights_at(pos: Tuple[float, float, float] = (0, 0, 0),
