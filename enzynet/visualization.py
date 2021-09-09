@@ -5,7 +5,7 @@
 
 # MIT License
 
-from typing import List, Optional, Text, Tuple
+from typing import Optional, Text, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
