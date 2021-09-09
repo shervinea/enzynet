@@ -98,9 +98,9 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
     ax.zaxis._axinfo["grid"]['linewidth'] = 0.1
 
     # Change thickness of ticks.
-    ax.xaxis._axinfo["tick"]['linewidth'] = 0.1
-    ax.yaxis._axinfo["tick"]['linewidth'] = 0.1
-    ax.zaxis._axinfo["tick"]['linewidth'] = 0.1
+    ax.xaxis._axinfo["tick"]['linewidth'][True] = 0.1
+    ax.yaxis._axinfo["tick"]['linewidth'][True] = 0.1
+    ax.zaxis._axinfo["tick"]['linewidth'][True] = 0.1
 
     # Change tick placement.
     ax.xaxis._axinfo['tick']['inward_factor'] = 0
