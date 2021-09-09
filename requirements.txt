@@ -6,7 +6,7 @@ keras
 tensorflow
 
 # Plot
-matplotlib
+matplotlib==3.4.1
 
 # Biology
 biopython
