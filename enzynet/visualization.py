@@ -52,7 +52,11 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
     plt.rc('font', family='serif')
     fig = plt.figure(figsize=(4,4))
     ax = fig.gca(projection='3d')
-    ax.set_aspect('equal')
+
+    # Reproduces the functionality of ax.set_aspect('equal').
+    # Source: https://github.com/matplotlib/matplotlib/issues/17172#issuecomment-830139107
+    ax.set_box_aspect(
+        [ub - lb for lb, ub in (getattr(ax, f'get_{a}lim')() for a in 'xyz')])
 
     # Parameters.
     len_vol = vol.shape[0]
