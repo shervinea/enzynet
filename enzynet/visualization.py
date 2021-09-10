@@ -52,7 +52,7 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
     fig = plt.figure(figsize=(4,4))
-    ax = fig.gca(projection='3d')
+    ax = fig.add_subplot(projection='3d')
 
     # Reproduces the functionality of ax.set_aspect('equal').
     # Source: https://github.com/matplotlib/matplotlib/issues/17172#issuecomment-830139107
