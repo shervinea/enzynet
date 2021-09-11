@@ -177,12 +177,22 @@ def create_reduced_sets(save: bool = False) -> None:
         tools.dict_to_csv(partition_red, '../partition_single_red.csv')
 
 
+def create_download_file(save: bool = False) -> None:
+    """Creates the RCSB download file containing all relevant PDB IDs."""
+    df = pd.read_csv('../dataset_all.csv', header=None)
+
+    if save:  # DONE 2017-03-18.
+        with open('../download_pdb.txt', 'w') as file:
+            file.write(", ".join(df[0].tolist()))
+
+
 def main(_):
     find_correct_ids(FLAGS.save)
     create_pdb_to_class_mapping(FLAGS.save)
     create_pdb_ligand_mappings(FLAGS.save)
     split_dataset_into_train_val_test(FLAGS.save)
     create_reduced_sets(FLAGS.save)
+    create_download_file(FLAGS.save)
 
 
 if __name__ == '__main__':

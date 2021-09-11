@@ -13,5 +13,6 @@ biopython
 
 # Miscellaneous
 absl-py
+joblib
 more_itertools
 tqdm
