@@ -8,6 +8,8 @@
 from absl import app
 from absl import flags
 
+import os
+
 import numpy as np
 
 from enzynet import keras_utils
@@ -23,6 +25,10 @@ from keras import optimizers
 from keras import regularizers
 
 FLAGS = flags.FLAGS
+
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+DATASETS_PATH = os.path.join(CURRENT_DIRECTORY, '../../datasets/')
+CHECKPOINTS_PATH = os.path.join(CURRENT_DIRECTORY, 'checkpoints/')
 
 # Main parameters.
 flags.DEFINE_enum('mode_dataset', default='full',
@@ -110,13 +116,16 @@ STDDEV_CONV3D = np.sqrt(2.0/N_CHANNELS)
 def main(_):
     ##---------------------------- Dataset -----------------------------------##
     # Load dictionary of labels.
-    DICTIONARY = tools.read_dict('../../datasets/dataset_single.csv')
+    DICTIONARY = tools.read_dict(
+        os.path.join(DATASETS_PATH, 'dataset_single.csv'))
 
     # Load partitions.
     if FLAGS.mode_dataset == 'full':
-        partition = tools.read_dict('../../datasets/partition_single.csv')
+        partition = tools.read_dict(
+            os.path.join(DATASETS_PATH, 'partition_single.csv'))
     elif FLAGS.mode_dataset == 'reduced':
-        partition = tools.read_dict('../../datasets/partition_single_red.csv')
+        partition = tools.read_dict(
+            os.path.join(DATASETS_PATH, 'partition_single_red.csv'))
     exec("partition['train'] = " + partition['train'])
     exec("partition['validation'] = " + partition['validation'])
     exec("partition['test'] = " + partition['test'])
@@ -240,7 +249,7 @@ def main(_):
 
     # Checkpoints.
     checkpoints = callbacks.ModelCheckpoint(
-        'checkpoints/' + run_type + '_{epoch:02d}' + '.hd5f',
+        os.path.join(CHECKPOINTS_PATH, f'{run_type}_{{epoch:02d}}.hd5f'),
         save_weights_only=True,
         period=FLAGS.period_checkpoint)
 
@@ -263,8 +272,8 @@ def main(_):
 
     if FLAGS.mode_run == 'test':
         # Load weights.
-        weights_path = \
-            'checkpoints/' + run_type + '_{0:02d}'.format(FLAGS.max_epochs) + '.hd5f'
+        weights_path = os.path.join(CHECKPOINTS_PATH,
+                                    f'{run_type}_{FLAGS.max_epochs:02d}.hd5f')
         model.load_weights(weights_path)
 
     # Predict.

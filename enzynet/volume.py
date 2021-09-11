@@ -304,9 +304,9 @@ def precomputed_name(pdb_id: Text, path: Text, type_file: Text, desired_p: int,
                      scaling: bool = True) -> Text:
     """Returns path in string of precomputed file."""
     if type_file == 'coords':
-        return os.path.join(path, pdb_id.lower() + '_coords_p' + str(desired_p) + '.npy')
+        return os.path.join(path, f'{pdb_id.lower()}_coords_p{desired_p}.npy')
     elif type_file == 'weights':
-        return os.path.join(path, pdb_id.lower() + '_' + weights_name + '_p' + str(desired_p) + '_scaling' + str(scaling) + '.npy')
+        return os.path.join(path, f'{pdb_id.lower()}_{weights_name}_p{desired_p}_scaling{scaling}.npy')
 
 
 def save_coords_weights(pdb_id: Text, list_weights: List[Text], desired_p: int,
