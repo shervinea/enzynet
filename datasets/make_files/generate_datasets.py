@@ -9,6 +9,7 @@ from absl import app
 from absl import flags
 from typing import Any, Dict, List, Text
 
+import os
 import more_itertools
 
 import numpy as np
@@ -20,6 +21,9 @@ from tqdm import tqdm
 
 FLAGS = flags.FLAGS
 np.random.seed(0)  # For reproducibility.
+
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+DATASETS_PATH = os.path.join(CURRENT_DIRECTORY, '../')
 
 flags.DEFINE_bool('save', False, 'Whether to save generation results.')
 
@@ -40,7 +44,9 @@ def find_correct_ids(save: bool = False) -> None:
     for pdb_class in range(1, N_CLASSES+1):
         # Initialization.
         errors = []
-        enzymes = pd.read_table('raw/' + str(pdb_class) + '.txt', header=None)
+        enzymes = pd.read_table(
+            os.path.join(CURRENT_DIRECTORY, f'raw/{pdb_class}.txt'),
+            header=None)
         list_enzymes = enzymes.loc[:, 0].tolist()
 
         # Look for errors.
@@ -61,7 +67,8 @@ def find_correct_ids(save: bool = False) -> None:
         enzymes = enzymes.drop(enzymes.index[errors])
 
         if save:  # DONE 2017-03-18.
-            enzymes.to_csv(str(pdb_class) + '.txt', header=None, index=None)
+            enzymes.to_csv(os.path.join(CURRENT_DIRECTORY, f'{pdb_class}.txt'),
+                           header=None, index=None)
 
 
 def create_pdb_to_class_mapping(save: bool = False) -> None:
@@ -74,7 +81,8 @@ def create_pdb_to_class_mapping(save: bool = False) -> None:
     # Compute labels of all enzymes.
     for pdb_class in range(1, N_CLASSES+1):
         # Load PDB IDs for each class.
-        enzymes = pd.read_table(str(pdb_class) + '.txt', header=None)
+        enzymes = pd.read_table(
+            os.path.join(CURRENT_DIRECTORY, f'{pdb_class}.txt'), header=None)
         enzymes = enzymes[0].tolist()
 
         # Add entries to dict.
@@ -92,9 +100,12 @@ def create_pdb_to_class_mapping(save: bool = False) -> None:
             labels_multi[pdb_id] = pdb_classes
 
     if save:  # DONE 2017-03-18.
-        tools.dict_to_csv(labels_all, '../dataset_all.csv')
-        tools.dict_to_csv(labels_single, '../dataset_single.csv')
-        tools.dict_to_csv(labels_multi, '../dataset_multi.csv')
+        tools.dict_to_csv(labels_all,
+                          os.path.join(DATASETS_PATH, 'dataset_all.csv'))
+        tools.dict_to_csv(labels_single,
+                          os.path.join(DATASETS_PATH, 'dataset_single.csv'))
+        tools.dict_to_csv(labels_multi,
+                          os.path.join(DATASETS_PATH, 'dataset_multi.csv'))
 
 
 def create_pdb_ligand_mappings(save: bool = False) -> None:
@@ -104,7 +115,8 @@ def create_pdb_ligand_mappings(save: bool = False) -> None:
     pdbs = {}
 
     # Computations.
-    pdb_ids = list(tools.read_dict('../dataset_all.csv'))
+    pdb_ids = list(
+        tools.read_dict(os.path.join(DATASETS_PATH, 'dataset_all.csv')))
     for pdb_id in tqdm(pdb_ids):
         # Get ligands.
         local_enzyme = pdb.PDBBackbone(pdb_id)
@@ -121,14 +133,17 @@ def create_pdb_ligand_mappings(save: bool = False) -> None:
                 ligands[ligand_id] = [pdb_id]
 
     if save:  # DONE 2017-03-18.
-        tools.dict_to_csv(pdbs, '../pdb_to_ligands.csv')
-        tools.dict_to_csv(ligands, '../ligands_to_pdb.csv')
+        tools.dict_to_csv(pdbs,
+                          os.path.join(DATASETS_PATH, 'pdb_to_ligands.csv'))
+        tools.dict_to_csv(ligands,
+                          os.path.join(DATASETS_PATH, 'ligands_to_pdb.csv'))
 
 
 def split_dataset_into_train_val_test(save: bool = False) -> None:
     """Split single-label into training/validation/testing sets."""
     # Random index shuffling.
-    pdb_ids = list(tools.read_dict('../dataset_single.csv'))
+    pdb_ids = list(
+        tools.read_dict(os.path.join(DATASETS_PATH, 'dataset_single.csv')))
     indexes = np.arange(len(pdb_ids))
     np.random.shuffle(indexes)
 
@@ -145,7 +160,8 @@ def split_dataset_into_train_val_test(save: bool = False) -> None:
     }
 
     if save:  # DONE 2017-03-18.
-        tools.dict_to_csv(partition, '../partition_single.csv')
+        tools.dict_to_csv(partition,
+                          os.path.join(DATASETS_PATH, 'partition_single.csv'))
 
 
 def _create_reduced_set(list_ids: List[Text]) -> List[Text]:
@@ -170,19 +186,22 @@ def create_reduced_sets(save: bool = False) -> None:
     """Create reduced single-label train/validation/test sets."""
     # Create reduced sets.
     partition = _format_dict_values_to_lists_of_strings(
-        tools.read_dict('../partition_single.csv'))
+        tools.read_dict(os.path.join(DATASETS_PATH, 'partition_single.csv')))
     partition_red = {key: _create_reduced_set(key) for key in partition}
 
     if save:  # DONE 2017-03-18.
-        tools.dict_to_csv(partition_red, '../partition_single_red.csv')
+        tools.dict_to_csv(
+            partition_red,
+            os.path.join(DATASETS_PATH, 'partition_single_red.csv'))
 
 
 def create_download_file(save: bool = False) -> None:
     """Creates the RCSB download file containing all relevant PDB IDs."""
-    df = pd.read_csv('../dataset_all.csv', header=None)
+    df = pd.read_csv(os.path.join(DATASETS_PATH, 'dataset_all.csv'),
+                     header=None)
 
     if save:  # DONE 2017-03-18.
-        with open('../download_pdb.txt', 'w') as file:
+        with open(os.path.join(DATASETS_PATH, 'download_pdb.txt'), 'w') as file:
             file.write(", ".join(df[0].tolist()))
 
 

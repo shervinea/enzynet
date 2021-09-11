@@ -7,12 +7,17 @@
 
 from typing import Optional, Text, Tuple
 
+import os
+
 import numpy as np
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 
 from enzynet import pdb
 from enzynet import volume
+
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+VISUALIZATION_PATH = os.path.join(CURRENT_DIRECTORY, '../scripts/volume/')
 
 
 def visualize_pdb(pdb_id: Text, p: int = 5, v_size: int = 32, num: int = 1,
@@ -113,8 +118,8 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
     ax.zaxis._axinfo['tick']['outward_factor'] = 0.2
 
     # Save.
-    plt.savefig('../scripts/volume/' + str(pdb_id) + '_' + str(v_size) + '_' +
-                str(weight_type) + '_' + str(num) + '.pdf')
+    plt.savefig(os.path.join(VISUALIZATION_PATH,
+                             f'{pdb_id}_{v_size}_{weight_type}_{num}.pdf'))
 
 
 def cuboid_data(
