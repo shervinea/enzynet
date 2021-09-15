@@ -1,4 +1,4 @@
-"""Pckage-level constant values."""
+"""Package-level constant values."""
 
 # Authors: Afshine Amidi <lastname@mit.edu>
 #          Shervine Amidi <firstname@stanford.edu>
