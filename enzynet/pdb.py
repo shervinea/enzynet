@@ -16,16 +16,13 @@ import numpy as np
 from Bio.PDB import PDBExceptions
 from Bio.PDB import PDBParser
 from Bio.PDB import Polypeptide
+from enzynet import constants
 from enzynet import tools
 from enzynet import weights
 
 warnings.filterwarnings("ignore", category=PDBExceptions.PDBConstructionWarning)
 
 BACKBONE_IDS = ['C', 'N', 'CA']
-
-CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-PDB_PATH = os.path.join(CURRENT_DIRECTORY, '../files/PDB/')
-DATASETS_PATHS = os.path.join(CURRENT_DIRECTORY, '../datasets/')
 
 
 class PDBBackbone(object):
@@ -40,7 +37,7 @@ class PDBBackbone(object):
         Path where the PDB file is located, or where the PDB file should be
         downloaded.
     """
-    def __init__(self, pdb_id: Text, path: Text = PDB_PATH) -> None:
+    def __init__(self, pdb_id: Text, path: Text = constants.PDB_DIR) -> None:
         """Initialization."""
         self.pdb_id = pdb_id.upper()
         fullfilename = os.path.join(path, pdb_id.lower() + '.pdb')
