@@ -7,11 +7,11 @@
 
 from typing import Dict, List, Text
 
-import os.path
 import itertools
 
 import numpy as np
 
+from enzynet import constants
 from enzynet import indicators
 from enzynet import real_time
 from enzynet import tools
@@ -20,10 +20,6 @@ from keras import models
 from keras.callbacks import Callback
 from matplotlib import pyplot as plt
 from tqdm import tqdm
-
-CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-PRECOMPUTED_PATH = os.path.join(CURRENT_DIRECTORY, '../files/precomputed/')
-PDB_PATH = os.path.join(CURRENT_DIRECTORY, '../files/PDB/')
 
 METHODS = ['confusion_matrix', 'accuracy',
            'precision_per_class', 'recall_per_class', 'f1_per_class',
@@ -86,8 +82,8 @@ class Voting(volume.VolumeDataGenerator):
             voting_type: Text = 'probabilities',
             augmentation: List[Text] = ['None'],
             v_size: int = 32,
-            directory_precomputed: Text = PRECOMPUTED_PATH,
-            directory_pdb: Text = PDB_PATH,
+            directory_precomputed: Text = constants.PRECOMPUTED_DIR,
+            directory_pdb: Text = constants.PDB_DIR,
             shuffle: bool = True,
             p: int = 5,
             max_radius: float = 40,

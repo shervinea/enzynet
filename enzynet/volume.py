@@ -12,13 +12,10 @@ import os.path
 
 import numpy as np
 
+from enzynet import constants
 from enzynet import pdb
 from sklearn import decomposition
 from tqdm import tqdm
-
-CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-PRECOMPUTED_PATH = os.path.join(CURRENT_DIRECTORY, '../files/precomputed/')
-PDB_PATH = os.path.join(CURRENT_DIRECTORY, '../files/PDB/')
 
 
 class VolumeDataGenerator(keras.utils.Sequence):
@@ -94,8 +91,8 @@ class VolumeDataGenerator(keras.utils.Sequence):
             v_size: int = 32,
             flips: Tuple[float, float, float] = (0.2, 0.2, 0.2),
             batch_size: int = 32,
-            directory_precomputed: Text = PRECOMPUTED_PATH,
-            directory_pdb: Text = PDB_PATH,
+            directory_precomputed: Text = constants.PRECOMPUTED_DIR,
+            directory_pdb: Text = constants.PDB_DIR,
             shuffle: bool = True,
             p: int = 5,
             max_radius: float = 40,
