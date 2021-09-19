@@ -5,18 +5,49 @@
 
 # MIT License
 
-from typing import Any, Dict, Iterator, Text
+from typing import Any, Dict, Iterator, List, Text, Union
+
+from enzynet import constants
 
 import csv
 
 csv.field_size_limit(10**7)
 
+_ELEMENT_DELIMITER = ', '
+_STRINGS_TO_IGNORE = ['\'', '"', '[', ']']
 
-def read_dict(path: Text) -> Dict[Any, Any]:
+
+def _convert_to_target_value(
+        value: Text,
+        value_type: constants.ValueType
+) -> Union[int, Text, List[float], List[int], List[Text]]:
+    """Helper function that turns a string value into its intended type."""
+    if value_type == constants.ValueType.INT:
+        return int(value)
+    elif value_type == constants.ValueType.STRING:
+        return value
+    for string_to_ignore in _STRINGS_TO_IGNORE:
+        value = value.replace(string_to_ignore, '')
+    values = value.split(_ELEMENT_DELIMITER)
+    if value_type == constants.ValueType.LIST_FLOAT:
+        return list(map(float, values))
+    elif value_type == constants.ValueType.LIST_INT:
+        return list(map(int, values))
+    elif value_type == constants.ValueType.LIST_STRING:
+        return values
+    else:
+        raise ValueError(f'Enum value {value_type.name} not supported.')
+
+
+def read_dict(
+        path: Text,
+        value_type: constants.ValueType = constants.ValueType.STRING
+) -> Dict[Any, Union[int, Text, List[float], List[int], List[Text]]]:
     """Reads Python dictionary stored in a csv file."""
     dictionary = {}
-    for key, val in csv.reader(open(path)):
-        dictionary[key] = val
+    with open(path) as f:
+        for key, val in csv.reader(f):
+            dictionary[key] = _convert_to_target_value(val, value_type)
     return dictionary
 
 

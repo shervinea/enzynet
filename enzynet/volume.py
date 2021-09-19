@@ -71,18 +71,19 @@ class VolumeDataGenerator(keras.utils.Sequence):
 
     Example
     -------
-    >>> from enzynet.volume import VolumeDataGenerator
-    >>> from enzynet.tools import read_dict
+    >>> from enzynet import volume
+    >>> from enzynet import tools
 
-    >>> labels = read_dict('../datasets/dataset_single.csv')
-    >>> partition_red = read_dict('../../datasets/partition_single_red.csv')
-    >>> exec("partition_red['train'] = " + partition_red['train'])
+    >>> labels = tools.read_dict('../datasets/dataset_single.csv',
+                                 value_type=constants.ValueType.INT)
+    >>> partition_red = tools.read_dict(
+            '../../datasets/partition_single_red.csv',
+            value_type=constants.ValueType.LIST_STRING)
 
-    >>> generator = VolumeDataGenerator(partition_red['train'], labels,
-                                        v_size=64, flips=(0.2, 0.2, 0.2),
-                                        batch_size=32, shuffle=True, p=5,
-                                        max_radius=40, noise_treatment=False,
-                                        weights=[], scaling_weights=True)
+    >>> generator = volume.VolumeDataGenerator(
+            partition_red['train'], labels, v_size=64, flips=(0.2, 0.2, 0.2),
+            batch_size=32, shuffle=True, p=5, max_radius=40,
+            noise_treatment=False, weights=[], scaling_weights=True)
     """
     def __init__(
             self,

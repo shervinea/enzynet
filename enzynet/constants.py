@@ -5,6 +5,7 @@
 
 # MIT License
 
+import enum
 import os
 
 # Data.
@@ -21,4 +22,8 @@ MODULE_DIR = os.path.join(ROOT_DIR, 'enzynet/')
 PDB_DIR = os.path.join(ROOT_DIR, 'files/PDB/')
 PRECOMPUTED_DIR = os.path.join(ROOT_DIR, 'files/precomputed/')
 VISUALIZATION_DIR = os.path.join(ROOT_DIR, 'scripts/volume/')
+ARCHITECTURE_DIR = os.path.join(ROOT_DIR, 'scripts/architecture/')
 CHECKPOINTS_DIR = os.path.join(ROOT_DIR, 'scripts/architecture/checkpoints/')
+
+# Enums.
+ValueType = enum.Enum('ValueType', 'INT LIST_FLOAT LIST_INT LIST_STRING STRING')
