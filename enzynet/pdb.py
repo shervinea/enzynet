@@ -9,18 +9,14 @@ from typing import List, Sequence, Text
 
 import os.path
 import urllib.request
-import warnings
 
 import numpy as np
 
-from Bio.PDB import PDBExceptions
 from Bio.PDB import PDBParser
 from Bio.PDB import Polypeptide
 from enzynet import constants
 from enzynet import tools
 from enzynet import weights
-
-warnings.filterwarnings("ignore", category=PDBExceptions.PDBConstructionWarning)
 
 BACKBONE_IDS = ['C', 'N', 'CA']
 
@@ -47,7 +43,8 @@ class PDBBackbone(object):
             urllib.request.urlretrieve('http://files.rcsb.org/download/' +
                                         pdb_id.upper() + '.pdb',
                                         fullfilename)
-        self.structure = PDBParser().get_structure(pdb_id.upper(), fullfilename)
+        self.structure = PDBParser(QUIET=True).get_structure(pdb_id.upper(),
+                                                             fullfilename)
 
     def get_coords(self) -> None:
         """Gets coordinates of backbone."""
