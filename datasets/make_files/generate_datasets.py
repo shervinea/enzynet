@@ -5,7 +5,7 @@
 
 # MIT License
 
-from typing import Any, Dict, List, Text
+from typing import List, Text
 
 from absl import app
 from absl import flags
@@ -29,9 +29,6 @@ flags.DEFINE_bool('save', False, 'Whether to save generation results.')
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017.
 
 # Parameters.
-_ELEMENT_DELIMITER = ', '
-_STRINGS_TO_IGNORE = ['\'', '"', '[', ']']
-
 N_CLASSES = 6
 RATIO_TRAIN = 0.8  # Split all 80:20 in train/test and train 80:20 in train/validation.
 FACTOR_REDUCTION = 0.1
@@ -177,23 +174,12 @@ def _create_reduced_set(list_ids: List[Text]) -> List[Text]:
     return [list_ids[i] for i in indices[:int(FACTOR_REDUCTION * len(indices))]]
 
 
-def _format_dict_values_to_lists_of_strings(
-        raw_dict: Dict[Any, Text]) -> Dict[Any, List[Text]]:
-    """Turns string values of dictionary into lists of strings."""
-    out_dict = {}
-    for key, value in raw_dict.items():
-        for string_to_ignore in _STRINGS_TO_IGNORE:
-            value = value.replace(string_to_ignore, '')
-        out_dict[key] = value.split(_ELEMENT_DELIMITER)
-    return out_dict
-
-
 def create_reduced_sets(save: bool = False) -> None:
     """Create reduced single-label train/validation/test sets."""
     # Create reduced sets.
-    partition = _format_dict_values_to_lists_of_strings(
-        tools.read_dict(
-            os.path.join(constants.DATASETS_DIR, 'partition_single.csv')))
+    partition = tools.read_dict(
+        os.path.join(constants.DATASETS_DIR, 'partition_single.csv'),
+        value_type=constants.ValueType.LIST_STRING)
     partition_red = {key: _create_reduced_set(key) for key in partition}
 
     if save:  # DONE 2017-03-18.

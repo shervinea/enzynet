@@ -114,18 +114,18 @@ def main(_):
     ##---------------------------- Dataset -----------------------------------##
     # Load dictionary of labels.
     DICTIONARY = tools.read_dict(
-        os.path.join(constants.DATASETS_DIR, 'dataset_single.csv'))
+        os.path.join(constants.DATASETS_DIR, 'dataset_single.csv'),
+        value_type=constants.ValueType.INT)
 
     # Load partitions.
     if FLAGS.mode_dataset == 'full':
         partition = tools.read_dict(
-            os.path.join(constants.DATASETS_DIR, 'partition_single.csv'))
+            os.path.join(constants.DATASETS_DIR, 'partition_single.csv'),
+            value_type=constants.ValueType.LIST_STRING)
     elif FLAGS.mode_dataset == 'reduced':
         partition = tools.read_dict(
-            os.path.join(constants.DATASETS_DIR, 'partition_single_red.csv'))
-    exec("partition['train'] = " + partition['train'])
-    exec("partition['validation'] = " + partition['validation'])
-    exec("partition['test'] = " + partition['test'])
+            os.path.join(constants.DATASETS_DIR, 'partition_single_red.csv'),
+            value_type=constants.ValueType.LIST_STRING)
 
     # Final computations.
     partition['train'] = partition['train'] + partition['validation']

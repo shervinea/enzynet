@@ -15,4 +15,5 @@ biopython
 absl-py
 joblib
 more_itertools
+parameterized
 tqdm
