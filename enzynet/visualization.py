@@ -107,13 +107,10 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
     ax.zaxis._axinfo["tick"]['linewidth'][True] = 0.1
 
     # Change tick placement.
-    ax.xaxis._axinfo['tick']['inward_factor'] = 0
-    ax.xaxis._axinfo['tick']['outward_factor'] = 0.2
-    ax.yaxis._axinfo['tick']['inward_factor'] = 0
-    ax.yaxis._axinfo['tick']['outward_factor'] = 0.2
-    ax.zaxis._axinfo['tick']['inward_factor'] = 0
-    ax.zaxis._axinfo['tick']['outward_factor'] = 0.2
-    ax.zaxis._axinfo['tick']['outward_factor'] = 0.2
+    for factor_type, val in zip(['inward_factor', 'outward_factor'], [0, 0.2]):
+        ax.xaxis._axinfo['tick'][factor_type] = val
+        ax.yaxis._axinfo['tick'][factor_type] = val
+        ax.zaxis._axinfo['tick'][factor_type] = val
 
     # Save.
     plt.savefig(os.path.join(constants.VISUALIZATION_DIR,
