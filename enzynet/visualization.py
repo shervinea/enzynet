@@ -37,11 +37,13 @@ def visualize_pdb(pdb_id: Text, p: int = 5, v_size: int = 32, num: int = 1,
 
     if weight_type is None:
         # Convert to volume.
-        vol = volume.coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
+        vol = volume.coords_to_volume(coords, v_size,
+                                      noise_treatment=noise_treatment)
     else:
         # Converts to volume of weights.
-        vol = volume.weights_to_volume(coords, pdb_backbone.backbone_weights_ext,
-                                       v_size, noise_treatment=noise_treatment)
+        vol = volume.weights_to_volume(
+            coords, pdb_backbone.backbone_weights_ext, v_size,
+            noise_treatment=noise_treatment)
     # Plot.
     plot_volume(vol, pdb_id, v_size, num, weight_type=weight_type)
 
