@@ -7,6 +7,9 @@
 
 from typing import Optional, Text, Tuple
 
+from absl import app
+from absl import flags
+
 import os
 
 import numpy as np
@@ -16,6 +19,24 @@ import matplotlib.pyplot as plt
 from enzynet import constants
 from enzynet import pdb
 from enzynet import volume
+
+FLAGS = flags.FLAGS
+
+flags.DEFINE_string('pdb_id', default='2Q3Z', help='PDB ID to be visualized.')
+flags.DEFINE_integer('v_size', lower_bound=1, default=32, help='Size of each '
+                     'dimension of the grid where enzymes are represented. '
+                     'Figure 2 of the paper shows 2Q3Z results for v_size '
+                     'values of 32, 64 and 96.')
+flags.DEFINE_integer('p', lower_bound=0, default=0, help='Number of '
+                     'interpolated points between two consecutive represented '
+                     'atoms. This parameter is used for finer grid '
+                     'representations in order to draw lines between '
+                     'consecutive points.')
+flags.DEFINE_enum('weight_type', default=None,
+                  enum_values=['charge', 'hydropathy', 'isoelectric'],
+                  help='If None, binary voxels of the atoms are shown. '
+                  'Otherwise, displays visualization of the corresponding '
+                  'weight type.')
 
 
 def visualize_pdb(pdb_id: Text, p: int = 5, v_size: int = 32, num: int = 1,
@@ -37,11 +58,13 @@ def visualize_pdb(pdb_id: Text, p: int = 5, v_size: int = 32, num: int = 1,
 
     if weight_type is None:
         # Convert to volume.
-        vol = volume.coords_to_volume(coords, v_size, noise_treatment=noise_treatment)
+        vol = volume.coords_to_volume(coords, v_size,
+                                      noise_treatment=noise_treatment)
     else:
         # Converts to volume of weights.
-        vol = volume.weights_to_volume(coords, pdb_backbone.backbone_weights_ext,
-                                       v_size, noise_treatment=noise_treatment)
+        vol = volume.weights_to_volume(
+            coords, pdb_backbone.backbone_weights_ext, v_size,
+            noise_treatment=noise_treatment)
     # Plot.
     plot_volume(vol, pdb_id, v_size, num, weight_type=weight_type)
 
@@ -107,13 +130,10 @@ def plot_volume(vol: np.ndarray, pdb_id: Text, v_size: int, num: int,
     ax.zaxis._axinfo["tick"]['linewidth'][True] = 0.1
 
     # Change tick placement.
-    ax.xaxis._axinfo['tick']['inward_factor'] = 0
-    ax.xaxis._axinfo['tick']['outward_factor'] = 0.2
-    ax.yaxis._axinfo['tick']['inward_factor'] = 0
-    ax.yaxis._axinfo['tick']['outward_factor'] = 0.2
-    ax.zaxis._axinfo['tick']['inward_factor'] = 0
-    ax.zaxis._axinfo['tick']['outward_factor'] = 0.2
-    ax.zaxis._axinfo['tick']['outward_factor'] = 0.2
+    for factor_type, val in zip(['inward_factor', 'outward_factor'], [0, 0.2]):
+        ax.xaxis._axinfo['tick'][factor_type] = val
+        ax.yaxis._axinfo['tick'][factor_type] = val
+        ax.zaxis._axinfo['tick'][factor_type] = val
 
     # Save.
     plt.savefig(os.path.join(constants.VISUALIZATION_DIR,
@@ -193,5 +213,10 @@ def plot_matrix_of_weights(ax: plt.gca, matrix_of_weights: np.ndarray) -> None:
                                  color=cgen[normalized_weight])
 
 
+def main(_):
+    visualize_pdb(FLAGS.pdb_id, p=FLAGS.p, v_size=FLAGS.v_size,
+                  weight_type=FLAGS.weight_type)
+
+
 if __name__ == '__main__':
-    visualize_pdb('2Q3Z', p=0, v_size=32, weight_type=None)
+    app.run(main)
