@@ -4,7 +4,7 @@
 #          Shervine Amidi <firstname@stanford.edu>
 
 # MIT License
-import keras
+
 import numpy as np
 
 from enzynet import constants
@@ -15,7 +15,7 @@ from keras import models
 from keras import regularizers
 
 
-def enzynet(input_v_size: int, n_channels: int) -> keras.Model:
+def enzynet(input_v_size: int, n_channels: int) -> models.Sequential:
     """Returns EnzyNet as a Keras model."""
     # Parameters.
     stddev_conv3d = np.sqrt(2.0/n_channels)
