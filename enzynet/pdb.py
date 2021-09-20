@@ -40,9 +40,9 @@ class PDBBackbone(object):
         if os.path.isfile(fullfilename):  # File in directory.
             pass
         else:
-            urllib.request.urlretrieve('http://files.rcsb.org/download/' +
-                                        pdb_id.upper() + '.pdb',
-                                        fullfilename)
+            urllib.request.urlretrieve(
+                f'{constants.RCSB_DOWNLOAD_WEBSITE}{pdb_id.upper()}.pdb',
+                fullfilename)
         self.structure = PDBParser(QUIET=True).get_structure(pdb_id.upper(),
                                                              fullfilename)
 

@@ -12,6 +12,8 @@ import os
 N_CLASSES = 6
 N_DIMENSIONS = 3
 
+RCSB_DOWNLOAD_WEBSITE = 'https://files.rcsb.org/download/'
+
 # Paths.
 ROOT_DIR = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '../'))
