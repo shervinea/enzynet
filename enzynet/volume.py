@@ -17,6 +17,8 @@ from enzynet import pdb
 from sklearn import decomposition
 from tqdm import tqdm
 
+_LENGTH_3_CUBE_FILLED_WITH_0_BUT_CENTER_1 = np.pad(np.ones((1, 1, 1)), 1,
+                                                   'constant')
 
 class VolumeDataGenerator(keras.utils.Sequence):
     """Generates batches of volumes containing 3D enzymes as well as their associated class labels on the fly.
@@ -279,6 +281,27 @@ def get_barycenter(coords: np.ndarray) -> np.ndarray:
     return np.array([np.mean(coords, axis=0)])
 
 
+def _is_point_in_volume_interior(x: int, y: int, z: int, v_size: int) -> bool:
+    """Returns True if the point is not on the volume's frontier."""
+    for dim in [x, y, z]:
+        if dim in [0, v_size-1]:
+            return False
+    return True
+
+
+def _is_point_isolated(volume: np.ndarray, x: int, y: int,
+                       z: int) -> bool:
+    """Returns True if there is no other point in a small cube neighborhood."""
+    return np.array_equal(
+        volume[x-1:x+2, y-1:y+2, z-1:z+2],
+        _LENGTH_3_CUBE_FILLED_WITH_0_BUT_CENTER_1 * volume[x, y, z])
+
+
+def _remove_isolated_point(volume: np.ndarray, x: int, y: int, z: int) -> None:
+    """Removes point of coordinates (x, y, z) from the volume."""
+    volume[x, y, z] = 0
+
+
 def remove_noise(coords: np.ndarray, volume: np.ndarray) -> np.ndarray:
     """Removes isolated atoms from voxel structure."""
     # Parameters.
@@ -286,13 +309,9 @@ def remove_noise(coords: np.ndarray, volume: np.ndarray) -> np.ndarray:
 
     # Computations.
     for i in range(coords.shape[0]):
-        if all(valeur < v_size-1 for valeur in coords[i,:]) and \
-           all(valeur > 0 for valeur in coords[i, :]):  # Point inside volume.
-            if np.array_equal(volume[coords[i, 0]-1:coords[i, 0]+2, coords[i, 1]-1:coords[i, 1]+2, coords[i, 2]-1:coords[i, 2]+2],
-                              np.pad(np.array([[[1]]]), 1, 'constant') * volume[tuple(coords[i])]) is True:  # Isolated point.
-                volume[coords[i, 0]-1:coords[i, 0]+2,
-                       coords[i, 1]-1:coords[i, 1]+2,
-                       coords[i, 2]-1:coords[i, 2]+2] = np.zeros((3, 3, 3))
+        if _is_point_in_volume_interior(*coords[i,], v_size):
+            if _is_point_isolated(volume, *coords[i,]):
+                _remove_isolated_point(volume, *coords[i,])
 
     return volume
 
