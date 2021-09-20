@@ -69,7 +69,7 @@ def get_class_weights(dictionary: Dict[Text, int],
                       mode: Text) -> Dict[int, float]:
     """Gets class weights for Keras."""
     # Initialization.
-    counter = [0 for i in range(6)]
+    counter = [0 for i in range(constants.N_CLASSES)]
 
     # Count classes.
     for enzyme in training_enzymes:

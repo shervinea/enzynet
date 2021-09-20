@@ -7,6 +7,8 @@
 
 import numpy as np
 
+from enzynet import constants
+
 
 def unalikeability(L: np.ndarray) -> float:
     """Returns unalikeability of a set of labels."""  # p.4 of Kader2007.
@@ -37,7 +39,7 @@ class Indicators(object):
     def __init__(self, y_true: np.ndarray, y_pred: np.ndarray) -> None:
         """Initialization."""
         self.n_samples = y_true.shape[0]
-        self.n_classes = 6
+        self.n_classes = constants.N_CLASSES
         self.y_true = y_true
         self.y_pred = y_pred
 

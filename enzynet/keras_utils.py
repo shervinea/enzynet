@@ -126,7 +126,7 @@ class Voting(volume.VolumeDataGenerator):
     def __vote(self, model: models.Sequential, enzyme: Text,
                augmentation: Text) -> int:
         # Initialization.
-        probability = np.zeros((1, 6))
+        probability = np.zeros((1, constants.N_CLASSES))
 
         # Nothing.
         if augmentation == 'None':
@@ -164,7 +164,8 @@ class Voting(volume.VolumeDataGenerator):
         # Weighted flips.
         elif augmentation == 'weighted_flips':
             # Generate all possibilities.
-            generator_flips = itertools.product(range(2), repeat=3)
+            generator_flips = itertools.product(range(2),
+                                                repeat=constants.N_DIMENSIONS)
 
             # Computations.
             for flip in generator_flips:

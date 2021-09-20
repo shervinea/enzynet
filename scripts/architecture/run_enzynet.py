@@ -99,7 +99,6 @@ flags.DEFINE_list('augmentation', default=['None', 'flips', 'weighted_flips'],
 
 ##------------------------------ Constants -----------------------------------##
 # PDB.
-N_CLASSES = 6
 N_CHANNELS = 1 + len(FLAGS.weights)
 
 # Miscellaneous.
@@ -141,7 +140,7 @@ def main(_):
         list_enzymes=partition['train'],
         labels=DICTIONARY,
         v_size=FLAGS.v_size,
-        flips=(FLAGS.flip_probability,) * 3,
+        flips=(FLAGS.flip_probability,) * constants.N_DIMENSIONS,
         batch_size=FLAGS.batch_size,
         shuffle=FLAGS.shuffle,
         p=FLAGS.p,
@@ -155,7 +154,7 @@ def main(_):
         list_enzymes=partition['validation'],
         labels=DICTIONARY,
         v_size=FLAGS.v_size,
-        flips=(0,) * 3,  # No flip.
+        flips=(0,) * constants.N_DIMENSIONS,  # No flip.
         batch_size=FLAGS.batch_size,
         shuffle=False,  # Validate with fixed set.
         p=FLAGS.p,
@@ -233,7 +232,7 @@ def main(_):
 
     model.add(
         layers.Dense(
-            units=N_CLASSES,
+            units=constants.N_CLASSES,
             kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=0.01),
             bias_initializer='zeros',
             kernel_regularizer=regularizers.l2(0.001),

@@ -10,6 +10,9 @@ import os
 
 # Data.
 N_CLASSES = 6
+N_DIMENSIONS = 3
+
+RCSB_DOWNLOAD_WEBSITE = 'https://files.rcsb.org/download/'
 
 # Paths.
 ROOT_DIR = os.path.abspath(

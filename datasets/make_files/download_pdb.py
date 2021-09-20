@@ -22,8 +22,6 @@ from tqdm import tqdm
 
 FLAGS = flags.FLAGS
 
-_RCSB_DOWNLOAD_WEBSITE = 'https://files.rcsb.org/download/'
-
 flags.DEFINE_integer('max_threads', lower_bound=1, upper_bound=4, default=1,
                      help='Number of threads requesting PDB downloads in '
                      'parallel. This number should be kept at a low value '
@@ -40,7 +38,7 @@ def get_effective_download_threads(requested_threads: int) -> int:
 def _download_pdb_file(pdb_id: Text) -> None:
     """Download a single PDB file of a given ID."""
     local_pdb_file = os.path.join(constants.PDB_DIR, f'{pdb_id.lower()}.pdb')
-    remote_pdb_file = f'{_RCSB_DOWNLOAD_WEBSITE}{pdb_id.lower()}.pdb'
+    remote_pdb_file = f'{constants.RCSB_DOWNLOAD_WEBSITE}{pdb_id.lower()}.pdb'
     if not os.path.isfile(local_pdb_file):
         try:
             urllib.request.urlretrieve(remote_pdb_file, local_pdb_file)
