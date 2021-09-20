@@ -99,7 +99,6 @@ flags.DEFINE_list('augmentation', default=['None', 'flips', 'weighted_flips'],
 
 ##------------------------------ Constants -----------------------------------##
 # PDB.
-N_CLASSES = 6
 N_CHANNELS = 1 + len(FLAGS.weights)
 
 # Miscellaneous.
@@ -233,7 +232,7 @@ def main(_):
 
     model.add(
         layers.Dense(
-            units=N_CLASSES,
+            units=constants.N_CLASSES,
             kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=0.01),
             bias_initializer='zeros',
             kernel_regularizer=regularizers.l2(0.001),

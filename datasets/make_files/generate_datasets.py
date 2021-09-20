@@ -29,7 +29,6 @@ flags.DEFINE_bool('save', False, 'Whether to save generation results.')
 # Date of retrieval of raw datasets from rcsb.org: 07-03-2017.
 
 # Parameters.
-N_CLASSES = 6
 RATIO_TRAIN = 0.8  # Split all 80:20 in train/test and train 80:20 in train/validation.
 FACTOR_REDUCTION = 0.1
 
@@ -37,7 +36,7 @@ FACTOR_REDUCTION = 0.1
 def find_correct_ids(save: bool = False) -> None:
     """Finds PDB IDs that contain valid coordinates."""
     # Computations.
-    for pdb_class in range(1, N_CLASSES+1):
+    for pdb_class in range(1, constants.N_CLASSES+1):
         # Initialization.
         errors = []
         enzymes = pd.read_table(
@@ -76,7 +75,7 @@ def create_pdb_to_class_mapping(save: bool = False) -> None:
     labels_multi = {}
 
     # Compute labels of all enzymes.
-    for pdb_class in range(1, N_CLASSES+1):
+    for pdb_class in range(1, constants.N_CLASSES+1):
         # Load PDB IDs for each class.
         enzymes = pd.read_table(
             os.path.join(

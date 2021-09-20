@@ -20,6 +20,7 @@ from tqdm import tqdm
 _LENGTH_3_CUBE_FILLED_WITH_0_BUT_CENTER_1 = np.pad(np.ones((1, 1, 1)), 1,
                                                    'constant')
 
+
 class VolumeDataGenerator(keras.utils.Sequence):
     """Generates batches of volumes containing 3D enzymes as well as their associated class labels on the fly.
 

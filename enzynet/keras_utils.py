@@ -126,7 +126,7 @@ class Voting(volume.VolumeDataGenerator):
     def __vote(self, model: models.Sequential, enzyme: Text,
                augmentation: Text) -> int:
         # Initialization.
-        probability = np.zeros((1, 6))
+        probability = np.zeros((1, constants.N_CLASSES))
 
         # Nothing.
         if augmentation == 'None':
