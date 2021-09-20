@@ -140,7 +140,7 @@ def main(_):
         list_enzymes=partition['train'],
         labels=DICTIONARY,
         v_size=FLAGS.v_size,
-        flips=(FLAGS.flip_probability,) * 3,
+        flips=(FLAGS.flip_probability,) * constants.N_DIMENSIONS,
         batch_size=FLAGS.batch_size,
         shuffle=FLAGS.shuffle,
         p=FLAGS.p,
@@ -154,7 +154,7 @@ def main(_):
         list_enzymes=partition['validation'],
         labels=DICTIONARY,
         v_size=FLAGS.v_size,
-        flips=(0,) * 3,  # No flip.
+        flips=(0,) * constants.N_DIMENSIONS,  # No flip.
         batch_size=FLAGS.batch_size,
         shuffle=False,  # Validate with fixed set.
         p=FLAGS.p,

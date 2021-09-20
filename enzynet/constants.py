@@ -10,6 +10,7 @@ import os
 
 # Data.
 N_CLASSES = 6
+N_DIMENSIONS = 3
 
 # Paths.
 ROOT_DIR = os.path.abspath(

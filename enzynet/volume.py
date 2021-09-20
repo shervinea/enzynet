@@ -198,7 +198,8 @@ class VolumeDataGenerator(keras.utils.Sequence):
                 local_weights += [local_weight]  # Store.
 
             # PCA.
-            coords = decomposition.PCA(n_components=3).fit_transform(coords)
+            coords = decomposition.PCA(
+                n_components=constants.N_DIMENSIONS).fit_transform(coords)
 
             # Do flip.
             coords_temp = flip_around_axis(coords, axis=self.flips)
@@ -230,7 +231,8 @@ def weights_to_volume(coords: np.ndarray, weights: Union[Sequence, int],
     volume = np.zeros((v_size, v_size, v_size))
 
     # Translate center.
-    coords = coords + np.full((coords.shape[0], 3), (v_size-1)/2)
+    coords = coords + np.full((coords.shape[0], constants.N_DIMENSIONS),
+                              (v_size-1)/2)
 
     # Round components.
     coords = coords.astype(int)

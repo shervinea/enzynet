@@ -164,7 +164,8 @@ class Voting(volume.VolumeDataGenerator):
         # Weighted flips.
         elif augmentation == 'weighted_flips':
             # Generate all possibilities.
-            generator_flips = itertools.product(range(2), repeat=3)
+            generator_flips = itertools.product(range(2),
+                                                repeat=constants.N_DIMENSIONS)
 
             # Computations.
             for flip in generator_flips:
