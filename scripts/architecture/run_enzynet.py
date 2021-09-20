@@ -10,8 +10,6 @@ from absl import flags
 
 import os
 
-import numpy as np
-
 from enzynet import constants
 from enzynet import keras_utils
 from enzynet import models
