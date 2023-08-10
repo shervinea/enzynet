@@ -1,7 +1,7 @@
 # Basics
 numpy
 pandas
-sklearn
+scikit-learn
 keras
 tensorflow
 
