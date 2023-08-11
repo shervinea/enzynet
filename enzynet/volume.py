@@ -152,7 +152,7 @@ class VolumeDataGenerator(keras.utils.Sequence):
 
     def __len__(self) -> int:
         """Denotes the number of batches per epoch."""
-        return int(np.floor(len(self.list_enzymes) / self.batch_size))
+        return int(np.ceil(len(self.list_enzymes) / self.batch_size))
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
         """Generate one batch of data."""
